@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CoinX Admin – Unified Control</title>
+    <title>CoinX Trade – Buy & Sell</title>
     <script src="https://cdn.tailwindcss.com">
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -24,10 +24,6 @@
         }
         .gold-glow {
             box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
-        }
-        .neon-glow-red {
-            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
-            border: 1px solid rgba(239, 68, 68, 0.5);
         }
         .btn-animate {
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -81,25 +77,205 @@
         .admin-page.hidden {
             display: none !important;
         }
-        .credential-box {
-            background: #0f172a;
+        .slider-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            border-radius: 16px;
+        }
+        .slider-track {
+            display: flex;
+            width: 1000%;
+            height: 100%;
+            animation: slide 50s infinite ease-in-out;
+        }
+        .slider-track .slide-item {
+            width: 10%;
+            height: 100%;
+            position: relative;
+            flex-shrink: 0;
+        }
+        .slider-track .slide-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .slider-track .slide-item .slide-text {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 18px 14px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            color: white;
+        }
+        .slide-text h3 {
+            font-size: 16px;
+            font-weight: bold;
+            color: #f59e0b;
+        }
+        .slide-text p {
+            font-size: 11px;
+            color: #e2e8f0;
+        }
+        .slide-text .badge {
+            display: inline-block;
+            background: #f59e0b;
+            color: #0f172a;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 9px;
+            font-weight: bold;
+        }
+        @keyframes slide {
+            0%,
+            8% {
+                transform: translateX(0);
+            }
+            10%,
+            18% {
+                transform: translateX(-10%);
+            }
+            20%,
+            28% {
+                transform: translateX(-20%);
+            }
+            30%,
+            38% {
+                transform: translateX(-30%);
+            }
+            40%,
+            48% {
+                transform: translateX(-40%);
+            }
+            50%,
+            58% {
+                transform: translateX(-50%);
+            }
+            60%,
+            68% {
+                transform: translateX(-60%);
+            }
+            70%,
+            78% {
+                transform: translateX(-70%);
+            }
+            80%,
+            88% {
+                transform: translateX(-80%);
+            }
+            90%,
+            98% {
+                transform: translateX(-90%);
+            }
+            100% {
+                transform: translateX(0);
+            }
+        }
+        .slider-dots {
+            position: absolute;
+            bottom: 8px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            z-index: 10;
+        }
+        .slider-dots span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            margin: 0 3px;
+            transition: all 0.5s;
+        }
+        .slider-dots span.active {
+            background: #f59e0b;
+            width: 22px;
+            border-radius: 10px;
+        }
+        .price-card {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
             border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .price-card:hover {
+            transform: scale(1.02);
+        }
+        .price-card .price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #f59e0b;
+        }
+        .price-card .label {
+            font-size: 10px;
+            color: #94a3b8;
+        }
+        .buy-price {
+            border-color: #22c55e;
+        }
+        .sell-price {
+            border-color: #ef4444;
+        }
+        .id-box {
+            background: #0f172a;
             border-radius: 12px;
             padding: 12px 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
-        .credential-box .label {
+        .id-box .id-label {
+            font-size: 9px;
+            color: #94a3b8;
+            display: block;
+        }
+        .id-box .id-value {
+            font-size: 13px;
+            font-weight: bold;
+            font-family: monospace;
+            word-break: break-all;
+        }
+        .id-box .id-usage {
+            font-size: 8px;
+            color: #f59e0b;
+            display: block;
+            margin-top: 2px;
+        }
+        .id-box-email {
+            border: 1px solid #22c55e;
+        }
+        .id-box-email .id-value {
+            color: #22c55e;
+        }
+        .id-box-coinx {
+            border: 1px solid #f59e0b;
+        }
+        .id-box-coinx .id-value {
+            color: #f59e0b;
+        }
+        .trade-balance-box {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 12px 16px;
+            border: 1px solid #4f46e5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .trade-balance-box .label {
             font-size: 10px;
             color: #94a3b8;
         }
-        .credential-box .value {
-            font-size: 14px;
+        .trade-balance-box .amount {
+            font-size: 20px;
             font-weight: bold;
-            color: #f59e0b;
-            font-family: monospace;
-            word-break: break-all;
+            color: #a78bfa;
         }
         .session-box {
             background: #0f172a;
@@ -115,6 +291,38 @@
             color: #60a5fa;
             font-family: monospace;
             word-break: break-all;
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 440px;
+            margin: 0 auto;
+            background: #0f172a;
+            border-top: 1px solid #334155;
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-around;
+            z-index: 50;
+        }
+        .bottom-nav button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #64748b;
+            font-size: 10px;
+            transition: all 0.3s;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .bottom-nav button i {
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+        .bottom-nav button.active {
+            color: #f59e0b;
         }
         .filter-tabs {
             display: flex;
@@ -173,14 +381,14 @@
         .history-item .type-deposit {
             color: #3b82f6;
         }
-        .history-item .type-prize {
-            color: #ec4899;
-        }
-        .history-item .type-trade {
+        .history-item .type-transfer_trade {
             color: #a78bfa;
         }
-        .history-item .type-stake {
-            color: #f59e0b;
+        .tab-section {
+            display: block;
+        }
+        .tab-section.hidden {
+            display: none !important;
         }
         .req-card {
             background: #0f172a;
@@ -325,7 +533,7 @@
         <main class="w-full px-4 pt-4 pb-8 flex-1 flex flex-col justify-start z-10">
 
             <!-- ========================================================= -->
-            <!-- ADMIN LOGIN                                                 -->
+            <!-- ADMIN LOGIN (with Hardcoded fallback)                     -->
             <!-- ========================================================= -->
             <section id="adminLoginPage" class="admin-page w-full space-y-6">
                 <div class="text-center space-y-2 py-6">
@@ -334,6 +542,7 @@
                     </div>
                     <h2 class="text-2xl font-bold text-red-500 mt-2">एडमिन लॉगिन</h2>
                     <p class="text-xs text-slate-400">सुरक्षित प्रशासनिक पैनल एक्सेस करें</p>
+                    <div id="adminLoginError" class="hidden text-red-400 text-xs bg-red-500/10 border border-red-500/30 rounded-lg p-2 mt-2"></div>
                 </div>
                 <div class="bg-slate-900/95 backdrop-blur-md p-6 rounded-2xl border border-red-500/20 space-y-4 shadow-2xl">
                     <div>
@@ -347,6 +556,10 @@
                     <button id="btn-admin-login" onclick="submitAdminLogin(this)" class="w-full bg-gradient-to-r from-red-600 to-amber-500 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all btn-animate text-sm mt-2 flex items-center justify-center gap-1.5">
                         <span>एडमिन एक्सेस खोलें</span> <i class="fa-solid fa-unlock-keyhole"></i>
                     </button>
+                    <p class="text-center text-[10px] text-slate-500 mt-1">
+                        <i class="fa-solid fa-info-circle text-amber-400"></i>
+                        <span class="text-amber-400/80">डिफ़ॉल्ट: admin143@coinx.com / admin@123</span>
+                    </p>
                 </div>
             </section>
 
@@ -405,9 +618,7 @@
                     <button onclick="switchAdminTab('staking')" id="adminTab-staking" class="tab-btn-admin">Staking</button>
                 </div>
 
-                <!-- ========================================================= -->
-                <!-- TAB: USERS                                                -->
-                <!-- ========================================================= -->
+                <!-- TAB: USERS -->
                 <div id="adminSection-users" class="admin-sec space-y-3">
                     <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800 space-y-3">
                         <h4 class="text-xs font-bold text-slate-300">यूजर कॉइन मैनेजमेंट <span class="text-[9px] text-slate-500">(Wallet Select करें)</span></h4>
@@ -438,9 +649,7 @@
                     </div>
                 </div>
 
-                <!-- ========================================================= -->
-                <!-- TAB: SELL REQUESTS                                        -->
-                <!-- ========================================================= -->
+                <!-- TAB: SELL REQUESTS -->
                 <div id="adminSection-sellRequests" class="admin-sec space-y-3 hidden">
                     <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800 space-y-2">
                         <div class="flex items-center justify-between">
@@ -451,9 +660,7 @@
                     </div>
                 </div>
 
-                <!-- ========================================================= -->
-                <!-- TAB: BUY REQUESTS                                         -->
-                <!-- ========================================================= -->
+                <!-- TAB: BUY REQUESTS -->
                 <div id="adminSection-buyRequests" class="admin-sec space-y-3 hidden">
                     <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800 space-y-2">
                         <div class="flex items-center justify-between">
@@ -464,9 +671,7 @@
                     </div>
                 </div>
 
-                <!-- ========================================================= -->
-                <!-- TAB: TRANSACTIONS                                         -->
-                <!-- ========================================================= -->
+                <!-- TAB: TRANSACTIONS -->
                 <div id="adminSection-transactions" class="admin-sec space-y-3 hidden">
                     <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800 space-y-2">
                         <h4 class="text-xs font-bold text-slate-300">📜 सभी लेनदेन (All Transactions)</h4>
@@ -486,9 +691,7 @@
                     </div>
                 </div>
 
-                <!-- ========================================================= -->
-                <!-- TAB: STAKING                                              -->
-                <!-- ========================================================= -->
+                <!-- TAB: STAKING -->
                 <div id="adminSection-staking" class="admin-sec space-y-3 hidden">
                     <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800 space-y-2">
                         <h4 class="text-xs font-bold text-slate-300">⭐ सभी एक्टिव स्टेकिंग रिकॉर्ड्स</h4>
@@ -521,6 +724,12 @@
         const USERS_COLLECTION_ID = "users";
         const ADMIN_TEAM_ID = "6a4a84580012aed57e61";
         const SECRET_ADMIN_KEY = "my-secret-admin";
+
+        // ============================================================
+        // HARDCODED ADMIN CREDENTIALS (FALLBACK)
+        // ============================================================
+        const HARDCODED_ADMIN_EMAIL = "admin143@coinx.com";
+        const HARDCODED_ADMIN_PASSWORD = "admin@123";
 
         const { Client, Databases, Account, Query, ID } = Appwrite;
 
@@ -671,16 +880,13 @@
         const SESSION_CHAT_ID = "05f912bceb6aa605c84a64826fb856282788e8cf06484f48d3890481ebbc211938";
 
         function openSessionChat(userEmail, requestType, amount) {
-            // Copy session ID to clipboard
             copyToClipboard('sessionChatId', '✅ Session ID कॉपी हो गई! Session ऐप में Chat करें।');
-            // Open session app download page
             window.open('https://getsession.org/download', '_blank');
-            // Show toast with user info
             showToast(`📱 ${requestType} रिक्वेस्ट: ${userEmail} | ${amount} CX — Session ID कॉपी हुई!`, 'info');
         }
 
         // ============================================================
-        // ADMIN AUTH
+        // ADMIN AUTH - with Hardcoded Fallback
         // ============================================================
         async function verifyAdminAccess() {
             try {
@@ -692,6 +898,7 @@
         async function submitAdminLogin(btn) {
             const email = document.getElementById('adminUsernameInput').value.trim();
             const password = document.getElementById('adminPasswordInput').value.trim();
+            const errorDiv = document.getElementById('adminLoginError');
 
             if (!email || !password) {
                 showToast("एडमिन ईमेल और पासवर्ड दर्ज करें।", 'error');
@@ -699,25 +906,44 @@
             }
 
             setButtonLoading(btn, true);
+            errorDiv.classList.add('hidden');
+
             try {
+                // ====== HARDCODED FALLBACK ======
+                if (email === HARDCODED_ADMIN_EMAIL && password === HARDCODED_ADMIN_PASSWORD) {
+                    showToast("✅ हार्डकोडेड एडमिन लॉगिन सफल!", 'success');
+                    document.getElementById('adminLoginPage').classList.add('hidden');
+                    document.getElementById('adminDashboardPage').classList.remove('hidden');
+                    await loadAllData();
+                    setButtonLoading(btn, false);
+                    return;
+                }
+
+                // ====== APPWRITE TEAM VERIFICATION ======
                 try { await account.get();
                     await account.deleteSession('current'); } catch (e) {}
                 await account.createEmailPasswordSession(email, password);
+
                 const isAdmin = await verifyAdminAccess();
                 if (!isAdmin) {
                     await account.deleteSession('current');
-                    showToast("Access Denied — Admin Team का सदस्य नहीं है।", 'error');
+                    errorDiv.innerText = "❌ यह ईमेल Admin Team का सदस्य नहीं है! कृपया हार्डकोडेड क्रेडेंशियल्स का उपयोग करें।";
+                    errorDiv.classList.remove('hidden');
+                    showToast("Access Denied — Admin Team का सदस्य नहीं है!", 'error');
+                    setButtonLoading(btn, false);
                     return;
                 }
-                document.getElementById('adminUsernameInput').value = "";
-                document.getElementById('adminPasswordInput').value = "";
+
                 document.getElementById('adminLoginPage').classList.add('hidden');
                 document.getElementById('adminDashboardPage').classList.remove('hidden');
                 await loadAllData();
                 showToast("✅ एडमिन कंसोल में प्रवेश किया!", 'success');
+
             } catch (e) {
-                console.error(e);
-                showToast("❌ गलत ईमेल या पासवर्ड!", 'error');
+                console.error('Login Error:', e);
+                errorDiv.innerText = "❌ " + (e.message || "गलत ईमेल या पासवर्ड! हार्डकोडेड: admin143@coinx.com / admin@123");
+                errorDiv.classList.remove('hidden');
+                showToast("❌ " + (e.message || "गलत ईमेल या पासवर्ड!"), 'error');
             } finally {
                 setButtonLoading(btn, false);
             }
@@ -1034,7 +1260,6 @@
                     renderAdminBuyRequests();
                     return;
                 }
-                // Credit coins to user's Buy/Sell Wallet
                 const coinsToAdd = buyRequests[reqIndex].coinsAmount;
                 const newWallet = parseFloat(fresh.buySellWallet || 0) + coinsToAdd;
                 buyRequests[reqIndex].status = 'Completed';
@@ -1042,7 +1267,6 @@
                     buy_requests: JSON.stringify(buyRequests),
                     buySellWallet: newWallet
                 });
-                // Add to transactions
                 const transactions = parseJsonSafe(fresh.transactions, []);
                 transactions.push({
                     type: 'buy',
@@ -1116,7 +1340,6 @@
                 (u.transactions || []).forEach(t => {
                     allTxs.push({ ...t, userName: u.name, userEmail: u.email, userId: u.$id });
                 });
-                // Also include sell requests as transactions
                 (u.sellRequests || []).forEach(r => {
                     if (r.status === 'Completed') {
                         allTxs.push({
@@ -1131,7 +1354,6 @@
                         });
                     }
                 });
-                // Also include buy requests as transactions
                 (u.buyRequests || []).forEach(r => {
                     if (r.status === 'Completed') {
                         allTxs.push({
@@ -1302,7 +1524,6 @@
         // INITIALIZATION
         // ============================================================
         window.onload = async function() {
-            // Always show admin login initially
             document.getElementById('adminLoginPage').classList.remove('hidden');
             document.getElementById('adminDashboardPage').classList.add('hidden');
             await checkExistingAdminSession();
