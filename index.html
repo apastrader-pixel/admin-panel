@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CoinX Admin – Unified Control</title>
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@16.0.2">
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #0b0f19;
+            overflow-x: hidden;
+            user-select: none;
+        }
+        .gold-glow {
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+        }
+        .neon-glow-red {
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+        }
+        .btn-animate {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-animate:active {
+            transform: scale(0.95);
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111827;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #f59e0b;
+            border-radius: 10px;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .admin-badge {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .admin-header {
+            border-bottom: 2px solid rgba(239, 68, 68, 0.3);
+        }
+        .user-header {
+            border-bottom: 2px solid rgba(245, 158, 11, 0.3);
+        }
+        .admin-section {
+            border-color: #ef4444 !important;
+        }
+        .admin-section .admin-label {
+            color: #ef4444;
+        }
+        .admin-sec {
+            display: block;
+        }
+        .admin-sec.hidden {
+            display: none !important;
+        }
+        .admin-page {
+            display: block;
+        }
+        .admin-page.hidden {
+            display: none !important;
+        }
+        .credential-box {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .credential-box .label {
+            font-size: 10px;
+            color: #94a3b8;
+        }
+        .credential-box .value {
+            font-size: 14px;
+            font-weight: bold;
+            color: #f59e0b;
+            font-family: monospace;
+            word-break: break-all;
+        }
+        .session-box {
+            background: #0f172a;
+            border: 1px solid #2563eb;
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .session-box .session-id {
+            font-size: 11px;
+            color: #60a5fa;
+            font-family: monospace;
+            word-break: break-all;
+        }
+        .filter-tabs {
+            display: flex;
+            gap: 3px;
+            background: #0f172a;
+            padding: 3px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            flex-wrap: wrap;
+        }
+        .filter-tabs button {
+            flex: 1;
+            padding: 4px 6px;
+            border-radius: 6px;
+            font-size: 9px;
+            font-weight: bold;
+            color: #94a3b8;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 40px;
+        }
+        .filter-tabs button.active {
+            background: #f59e0b;
+            color: #0f172a;
+        }
+        .filter-tabs button:hover:not(.active) {
+            color: #e2e8f0;
+        }
+        .history-item {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 12px 14px;
+            transition: all 0.3s;
+        }
+        .history-item:hover {
+            border-color: #f59e0b;
+        }
+        .history-item .type-buy {
+            color: #22c55e;
+        }
+        .history-item .type-sell {
+            color: #ef4444;
+        }
+        .history-item .type-transfer {
+            color: #8b5cf6;
+        }
+        .history-item .type-withdrawal {
+            color: #f59e0b;
+        }
+        .history-item .type-admin {
+            color: #f59e0b;
+        }
+        .history-item .type-deposit {
+            color: #3b82f6;
+        }
+        .history-item .type-prize {
+            color: #ec4899;
+        }
+        .history-item .type-trade {
+            color: #a78bfa;
+        }
+        .history-item .type-stake {
+            color: #f59e0b;
+        }
+        .req-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 14px 16px;
+            transition: all 0.3s;
+        }
+        .req-card:hover {
+            border-color: #f59e0b;
+        }
+        .req-card .req-user {
+            font-weight: bold;
+            color: #f59e0b;
+        }
+        .req-card .req-amount {
+            font-weight: bold;
+            color: #fff;
+        }
+        .req-card .req-detail {
+            font-size: 10px;
+            color: #94a3b8;
+        }
+        .btn-session {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-session:hover {
+            transform: scale(1.05);
+        }
+        .wallet-select {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: white;
+            font-size: 12px;
+            outline: none;
+            width: 100%;
+        }
+        .wallet-select:focus {
+            border-color: #f59e0b;
+        }
+        .dropdown-container {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 4px;
+        }
+        .dropdown-container select {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 12px;
+            padding: 6px 8px;
+            width: 100%;
+            outline: none;
+        }
+        .dropdown-container select option {
+            background: #1e293b;
+            color: white;
+        }
+        .tab-btn-admin {
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .tab-btn-admin.active {
+            background: #f59e0b;
+            color: #0f172a;
+        }
+        .tab-btn-admin:not(.active) {
+            background: transparent;
+            color: #94a3b8;
+        }
+        .tab-btn-admin:not(.active):hover {
+            color: #e2e8f0;
+        }
+        .badge-pending {
+            background: #f59e0b20;
+            color: #f59e0b;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 9px;
+            font-weight: bold;
+        }
+        .badge-completed {
+            background: #22c55e20;
+            color: #22c55e;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 9px;
+            font-weight: bold;
+        }
+        .badge-rejected {
+            background: #ef444420;
+            color: #ef4444;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 9px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Canvas -->
+    <canvas id="bgCanvas" class="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none opacity-80"></canvas>
+
+    <!-- MAIN CONTAINER -->
+    <div id="appContainer" class="w-full max-w-md mx-auto">
+
+        <!-- HEADER -->
+        <header id="mainHeader" class="w-full backdrop-blur-md py-3 px-4 flex items-center justify-between sticky top-0 z-40 shadow-lg admin-header">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-red-600 to-amber-500 flex items-center justify-center text-white font-bold text-lg shadow-lg border border-red-400">CX</div>
+                <div>
+                    <h1 id="headerTitle" class="font-bold text-md tracking-wider leading-none text-red-500">COINX ADMIN</h1>
+                    <span id="headerSubtitle" class="text-[9px] text-slate-400">Unified Control Panel</span>
+                </div>
+            </div>
+            <div class="text-right">
+                <span id="headerBadge" class="admin-badge"><i class="fa-solid fa-shield-halved mr-1"></i> ADMIN</span>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT -->
+        <main class="w-full px-4 pt-4 pb-8 flex-1 flex flex-col justify-start z-10">
+
+            <!-- ========================================================= -->
+            <!-- ADMIN LOGIN                                                 -->
+            <!-- ========================================================= -->
+            <section id="adminLoginPage" class="admin-page w-full space-y-6">
+                <div class="text-center space-y-2 py-6">
+                    <div class="w-20 h-20 rounded-full bg-slate-900 text-red-500 flex items-center justify-center text-3xl mx-auto neon-glow-red border border-red-500">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-red-500 mt-2">एडमिन लॉगिन</h2>
+                    <p class="text-xs text-slate-400">सुरक्षित प्रशासनिक पैनल एक्सेस करें</p>
+                </div>
+                <div class="bg-slate-900/95 backdrop-blur-md p-6 rounded-2xl border border-red-500/20 space-y-4 shadow-2xl">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5">एडमिन ईमेल</label>
+                        <input type="email" id="adminUsernameInput" placeholder="एडमिन ईमेल दर्ज करें" class="w-full bg-slate-950 border border-slate-800 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-red-500 text-white transition-all font-mono">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1.5">एडमिन पासवर्ड</label>
+                        <input type="password" id="adminPasswordInput" placeholder="पासवर्ड दर्ज करें" class="w-full bg-slate-950 border border-slate-800 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-red-500 text-white transition-all font-mono">
+                    </div>
+                    <button id="btn-admin-login" onclick="submitAdminLogin(this)" class="w-full bg-gradient-to-r from-red-600 to-amber-500 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all btn-animate text-sm mt-2 flex items-center justify-center gap-1.5">
+                        <span>एडमिन एक्सेस खोलें</span> <i class="fa-solid fa-unlock-keyhole"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- ========================================================= -->
+            <!-- ADMIN DASHBOARD                                            -->
+            <!-- ========================================================= -->
+            <section id="adminDashboardPage" class="admin-page w-full hidden space-y-4">
+
+                <!-- Top Bar -->
+                <div class="bg-slate-900/95 backdrop-blur-md p-4 rounded-xl border border-red-500/40 flex items-center justify-between flex-wrap gap-2">
+                    <div>
+                        <h3 class="text-sm font-bold text-red-400"><i class="fa-solid fa-house-laptop mr-1"></i> यूनिफाइड एडमिन</h3>
+                        <p class="text-[9px] text-slate-400">सिंक्रोनाइज्ड: Appwrite Cloud Active</p>
+                    </div>
+                    <div class="flex gap-1.5">
+                        <button onclick="logoutAdmin()" class="bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white text-[9px] font-bold px-2 py-1 rounded border border-red-500/30 btn-animate">
+                            <i class="fa-solid fa-right-from-bracket"></i> लॉगआउट
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                    <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
+                        <span class="text-[8px] text-slate-500 block mb-0.5">Total Users</span>
+                        <strong id="statTotalUsers" class="text-white text-md">0</strong>
+                    </div>
+                    <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
+                        <span class="text-[8px] text-slate-500 block mb-0.5">Pending Sell</span>
+                        <strong id="statPendingSell" class="text-yellow-400 text-md">0</strong>
+                    </div>
+                    <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
+                        <span class="text-[8px] text-slate-500 block mb-0.5">Pending Buy</span>
+                        <strong id="statPendingBuy" class="text-yellow-400 text-md">0</strong>
+                    </div>
+                    <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
+                        <span class="text-[8px] text-slate-500 block mb-0.5">Total Trades</span>
+                        <strong id="statTotalTrades" class="text-green-400 text-md">0</strong>
+                    </div>
+                    <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
+                        <span class="text-[8px] text-slate-500 block mb-0.5">Total Staked</span>
+                        <strong id="statTotalStaked" class="text-amber-400 text-md">0 CX</strong>
+                    </div>
+                    <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
+                        <span class="text-[8px] text-slate-500 block mb-0.5">Referral Bonus</span>
+                        <strong id="statReferrals" class="text-blue-400 text-md">0 CX</strong>
+                    </div>
+                </div>
+
+                <!-- Admin Tabs -->
+                <div class="flex bg-slate-950 p-1 rounded-lg border border-slate-800 text-[10px] overflow-x-auto flex-wrap">
+                    <button onclick="switchAdminTab('users')" id="adminTab-users" class="tab-btn-admin active">Users</button>
+                    <button onclick="switchAdminTab('sellRequests')" id="adminTab-sellRequests" class="tab-btn-admin">Sell Req.</button>
+                    <button onclick="switchAdminTab('buyRequests')" id="adminTab-buyRequests" class="tab-btn-admin">Buy Req.</button>
+                    <button onclick="switchAdminTab('transactions')" id="adminTab-transactions" class="tab-btn-admin">Transactions</button>
+                    <button onclick="switchAdminTab('staking')" id="adminTab-staking" class="tab-btn-admin">Staking</button>
+                </div>
+
+                <!-- ========================================================= -->
+                <!-- TAB: USERS                                                -->
+                <!-- ========================================================= -->
+                <div id="adminSection-users" class="admin-sec space-y-3">
+                    <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800 space-y-3">
+                        <h4 class="text-xs font-bold text-slate-300">यूजर कॉइन मैनेजमेंट <span class="text-[9px] text-slate-500">(Wallet Select करें)</span></h4>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <input type="text" id="adminCoinUserId" placeholder="यूजर आईडी/ईमेल" class="col-span-2 bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                            <input type="number" id="adminCoinAmount" placeholder="कॉइन्स की संख्या" class="bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-amber-500">
+                            <select id="adminCoinAction" class="bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs text-slate-300 focus:outline-none focus:border-amber-500">
+                                <option value="add">➕ जोड़ें (Credit)</option>
+                                <option value="subtract">➖ घटाएं (Debit)</option>
+                            </select>
+                            <div class="col-span-2">
+                                <label class="block text-[9px] text-slate-400 mb-1">💰 Wallet चुनें:</label>
+                                <div class="dropdown-container">
+                                    <select id="adminCoinWallet">
+                                        <option value="user">📊 User Panel (Main Balance)</option>
+                                        <option value="trade">🔄 CoinX Trade Wallet</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button id="btn-admin-coin" onclick="updateUserCoinsManually(this)" class="col-span-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2 rounded-lg text-xs transition-all btn-animate flex items-center justify-center gap-1">
+                                <span>अपडेट करें</span> <i class="fa-solid fa-floppy-disk"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800 space-y-2">
+                        <h4 class="text-xs font-bold text-slate-300">सभी पंजीकृत यूज़र्स</h4>
+                        <div id="adminUserList" class="space-y-2 text-xs max-h-[220px] overflow-y-auto font-mono"></div>
+                    </div>
+                </div>
+
+                <!-- ========================================================= -->
+                <!-- TAB: SELL REQUESTS                                        -->
+                <!-- ========================================================= -->
+                <div id="adminSection-sellRequests" class="admin-sec space-y-3 hidden">
+                    <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-xs font-bold text-slate-300">📤 पेंडिंग सेल रिक्वेस्ट्स</h4>
+                            <span class="text-[9px] text-slate-500">Session Chat से Buy/Sell करें</span>
+                        </div>
+                        <div id="adminSellRequestsList" class="space-y-2 text-xs max-h-[400px] overflow-y-auto"></div>
+                    </div>
+                </div>
+
+                <!-- ========================================================= -->
+                <!-- TAB: BUY REQUESTS                                         -->
+                <!-- ========================================================= -->
+                <div id="adminSection-buyRequests" class="admin-sec space-y-3 hidden">
+                    <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-xs font-bold text-slate-300">📥 पेंडिंग बाय रिक्वेस्ट्स</h4>
+                            <span class="text-[9px] text-slate-500">Session Chat से Buy/Sell करें</span>
+                        </div>
+                        <div id="adminBuyRequestsList" class="space-y-2 text-xs max-h-[400px] overflow-y-auto"></div>
+                    </div>
+                </div>
+
+                <!-- ========================================================= -->
+                <!-- TAB: TRANSACTIONS                                         -->
+                <!-- ========================================================= -->
+                <div id="adminSection-transactions" class="admin-sec space-y-3 hidden">
+                    <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800 space-y-2">
+                        <h4 class="text-xs font-bold text-slate-300">📜 सभी लेनदेन (All Transactions)</h4>
+                        <div class="filter-tabs">
+                            <button class="active" onclick="filterAdminHistory('all')">सभी</button>
+                            <button onclick="filterAdminHistory('buy')">🟢 Buy</button>
+                            <button onclick="filterAdminHistory('sell')">🔴 Sell</button>
+                            <button onclick="filterAdminHistory('deposit')">🔵 Deposit</button>
+                            <button onclick="filterAdminHistory('transfer')">🔄 Transfer</button>
+                            <button onclick="filterAdminHistory('withdrawal')">🟡 Withdrawal</button>
+                            <button onclick="filterAdminHistory('admin')">📞 Support</button>
+                            <button onclick="filterAdminHistory('transfer_trade')">🟣 Trade Transfer</button>
+                            <button onclick="filterAdminHistory('stake')">⭐ Staking</button>
+                            <button onclick="filterAdminHistory('prize')">🎁 Prize</button>
+                        </div>
+                        <div id="adminTransactionsList" class="space-y-2 text-xs max-h-[400px] overflow-y-auto"></div>
+                    </div>
+                </div>
+
+                <!-- ========================================================= -->
+                <!-- TAB: STAKING                                              -->
+                <!-- ========================================================= -->
+                <div id="adminSection-staking" class="admin-sec space-y-3 hidden">
+                    <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800 space-y-2">
+                        <h4 class="text-xs font-bold text-slate-300">⭐ सभी एक्टिव स्टेकिंग रिकॉर्ड्स</h4>
+                        <div id="adminStakingList" class="space-y-2 text-xs max-h-[400px] overflow-y-auto"></div>
+                    </div>
+                </div>
+
+            </section>
+
+        </main>
+
+        <!-- Toast -->
+        <div id="toastNotification" class="fixed top-16 max-w-sm w-[90%] bg-slate-900/95 border border-amber-500/50 text-amber-400 rounded-xl py-3 px-4 shadow-2xl z-50 text-xs flex items-center justify-between transition-all duration-300 opacity-0 pointer-events-none transform translate-y-[-20px]">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-bell animate-bounce text-amber-400 text-sm"></i>
+                <span id="toastMessage">नोटिफिकेशन</span>
+            </div>
+            <button onclick="hideToast()" class="text-slate-400 hover:text-white btn-animate"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+    </div>
+
+    <script>
+        // ============================================================
+        // APPWRITE CONFIGURATION
+        // ============================================================
+        const APPWRITE_ENDPOINT = "https://fra.cloud.appwrite.io/v1";
+        const APPWRITE_PROJECT_ID = "6a43cbf70027f5ff8960";
+        const DATABASE_ID = "6a47b7550016c4291ab3";
+        const USERS_COLLECTION_ID = "users";
+        const ADMIN_TEAM_ID = "6a4a84580012aed57e61";
+        const SECRET_ADMIN_KEY = "my-secret-admin";
+
+        const { Client, Databases, Account, Query, ID } = Appwrite;
+
+        const client = new Client()
+            .setEndpoint(APPWRITE_ENDPOINT)
+            .setProject(APPWRITE_PROJECT_ID);
+
+        const databases = new Databases(client);
+        const account = new Account(client);
+
+        // ============================================================
+        // STATE
+        // ============================================================
+        let users = [];
+        let adminHistoryFilter = 'all';
+        let currentAdminTab = 'users';
+
+        // ============================================================
+        // UTILITY
+        // ============================================================
+        function parseJsonSafe(value, fallback) {
+            if (value === null || value === undefined || value === '') return fallback;
+            if (typeof value !== 'string') return value;
+            try { return JSON.parse(value); } catch (e) { return fallback; }
+        }
+
+        function generateCoinXId() {
+            const random = Math.floor(100000000 + Math.random() * 900000000);
+            return 'CoinX' + random;
+        }
+
+        function setButtonLoading(button, isLoading) {
+            if (!button) return;
+            if (isLoading) {
+                button.disabled = true;
+                button.setAttribute('data-original', button.innerHTML);
+                button.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Loading...`;
+            } else {
+                button.disabled = false;
+                const orig = button.getAttribute('data-original');
+                if (orig) button.innerHTML = orig;
+            }
+        }
+
+        function mapUserDoc(doc) {
+            return {
+                ...doc,
+                docId: doc.$id,
+                staking: parseJsonSafe(doc.staking, []),
+                pendingDeposit: parseJsonSafe(doc.pending_deposit, null),
+                approvedDeposits: parseJsonSafe(doc.approved_deposit, []),
+                pendingWithdrawal: parseJsonSafe(doc.pending_withdrawal, null),
+                approvedWithdrawals: parseJsonSafe(doc.approved_withdrawal, []),
+                referrals: parseJsonSafe(doc.referrals, []),
+                transactions: parseJsonSafe(doc.transactions, []),
+                sellRequests: parseJsonSafe(doc.sell_requests, []),
+                buyRequests: parseJsonSafe(doc.buy_requests, []),
+                buySellWallet: parseFloat(doc.buySellWallet || 0),
+                coins: parseFloat(doc.coins || 0),
+                staked: parseFloat(doc.staked || 0),
+                coinxId: doc.coinxId || doc.coinxid || generateCoinXId()
+            };
+        }
+
+        // ============================================================
+        // TOAST
+        // ============================================================
+        let toastTimer = null;
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toastNotification');
+            document.getElementById('toastMessage').innerText = message;
+            const color = type === 'success' ? 'green' : type === 'error' ? 'red' : 'amber';
+            toast.className =
+                `fixed top-16 max-w-sm w-[90%] bg-slate-900/95 border border-${color}-500/50 text-${color}-400 rounded-xl py-3 px-4 shadow-2xl z-50 text-xs flex items-center justify-between transition-all duration-300 opacity-0 pointer-events-none transform translate-y-[-20px]`;
+            toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-[-20px]');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(hideToast, 4000);
+        }
+
+        function hideToast() {
+            const toast = document.getElementById('toastNotification');
+            toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-[-20px]');
+            toastTimer = null;
+        }
+
+        function copyToClipboard(elementId, successText) {
+            const elem = document.getElementById(elementId);
+            if (!elem) return;
+            const copyText = elem.innerText;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(copyText).catch(() => legacyCopyFallback(copyText));
+            } else {
+                legacyCopyFallback(copyText);
+            }
+            if (successText) showToast(successText, 'success');
+        }
+
+        function legacyCopyFallback(copyText) {
+            const tempInput = document.createElement("input");
+            tempInput.value = copyText;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+        }
+
+        // ============================================================
+        // BACKGROUND ANIMATION
+        // ============================================================
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        let w = canvas.width = window.innerWidth;
+        let h = canvas.height = window.innerHeight;
+        window.addEventListener('resize', () => { w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight; });
+
+        const candles = [];
+        for (let i = 0; i < 15; i++) {
+            candles.push({
+                x: Math.random() * w,
+                y: h + Math.random() * 200,
+                width: Math.random() * 6 + 4,
+                height: Math.random() * 50 + 15,
+                isGreen: Math.random() > 0.5,
+                speed: Math.random() * 0.4 + 0.1,
+                alpha: Math.random() * 0.1 + 0.03
+            });
+        }
+
+        function animateBg() {
+            ctx.clearRect(0, 0, w, h);
+            candles.forEach(c => {
+                ctx.fillStyle = c.isGreen ? `rgba(34,197,94,${c.alpha})` : `rgba(239,68,68,${c.alpha})`;
+                ctx.fillRect(c.x - c.width / 2, c.y, c.width, c.height);
+                c.y -= c.speed;
+                if (c.y < -100) { c.y = h + Math.random() * 200;
+                    c.x = Math.random() * w; }
+            });
+            requestAnimationFrame(animateBg);
+        }
+        animateBg();
+
+        // ============================================================
+        // SESSION CHAT HELPER
+        // ============================================================
+        const SESSION_CHAT_ID = "05f912bceb6aa605c84a64826fb856282788e8cf06484f48d3890481ebbc211938";
+
+        function openSessionChat(userEmail, requestType, amount) {
+            // Copy session ID to clipboard
+            copyToClipboard('sessionChatId', '✅ Session ID कॉपी हो गई! Session ऐप में Chat करें।');
+            // Open session app download page
+            window.open('https://getsession.org/download', '_blank');
+            // Show toast with user info
+            showToast(`📱 ${requestType} रिक्वेस्ट: ${userEmail} | ${amount} CX — Session ID कॉपी हुई!`, 'info');
+        }
+
+        // ============================================================
+        // ADMIN AUTH
+        // ============================================================
+        async function verifyAdminAccess() {
+            try {
+                const teamsList = await teams.list();
+                return teamsList.teams.some(t => t.$id === ADMIN_TEAM_ID);
+            } catch (e) { return false; }
+        }
+
+        async function submitAdminLogin(btn) {
+            const email = document.getElementById('adminUsernameInput').value.trim();
+            const password = document.getElementById('adminPasswordInput').value.trim();
+
+            if (!email || !password) {
+                showToast("एडमिन ईमेल और पासवर्ड दर्ज करें।", 'error');
+                return;
+            }
+
+            setButtonLoading(btn, true);
+            try {
+                try { await account.get();
+                    await account.deleteSession('current'); } catch (e) {}
+                await account.createEmailPasswordSession(email, password);
+                const isAdmin = await verifyAdminAccess();
+                if (!isAdmin) {
+                    await account.deleteSession('current');
+                    showToast("Access Denied — Admin Team का सदस्य नहीं है।", 'error');
+                    return;
+                }
+                document.getElementById('adminUsernameInput').value = "";
+                document.getElementById('adminPasswordInput').value = "";
+                document.getElementById('adminLoginPage').classList.add('hidden');
+                document.getElementById('adminDashboardPage').classList.remove('hidden');
+                await loadAllData();
+                showToast("✅ एडमिन कंसोल में प्रवेश किया!", 'success');
+            } catch (e) {
+                console.error(e);
+                showToast("❌ गलत ईमेल या पासवर्ड!", 'error');
+            } finally {
+                setButtonLoading(btn, false);
+            }
+        }
+
+        async function logoutAdmin() {
+            try { await account.deleteSession('current'); } catch (e) {}
+            showToast("एडमिन सेशन समाप्त हुआ!", 'info');
+            document.getElementById('adminLoginPage').classList.remove('hidden');
+            document.getElementById('adminDashboardPage').classList.add('hidden');
+        }
+
+        // ============================================================
+        // LOAD DATA
+        // ============================================================
+        async function loadAllData() {
+            try {
+                const usersRes = await databases.listDocuments(DATABASE_ID, USERS_COLLECTION_ID, [Query.limit(500)]);
+                users = usersRes.documents.map(mapUserDoc);
+                updateAdminDashboardStats();
+                if (currentAdminTab === 'users') renderAdminUsers();
+                if (currentAdminTab === 'sellRequests') renderAdminSellRequests();
+                if (currentAdminTab === 'buyRequests') renderAdminBuyRequests();
+                if (currentAdminTab === 'transactions') renderAdminTransactions();
+                if (currentAdminTab === 'staking') renderAdminStaking();
+            } catch (e) {
+                console.error('Load data error:', e);
+                showToast('डेटा लोड नहीं हो सका।', 'error');
+            }
+        }
+
+        function updateAdminDashboardStats() {
+            document.getElementById('statTotalUsers').innerText = users.length;
+            const totalTrades = users.reduce((acc, u) => acc + u.transactions.filter(t => ['buy', 'sell', 'deposit', 'transfer',
+                'transfer_trade'
+            ].includes(t.type)).length, 0);
+            document.getElementById('statTotalTrades').innerText = totalTrades;
+            const pendingSell = users.reduce((acc, u) => acc + u.sellRequests.filter(r => r.status === 'Pending').length, 0);
+            document.getElementById('statPendingSell').innerText = pendingSell;
+            const pendingBuy = users.reduce((acc, u) => acc + u.buyRequests.filter(r => r.status === 'Pending').length, 0);
+            document.getElementById('statPendingBuy').innerText = pendingBuy;
+            const totalStaked = users.reduce((acc, u) => acc + parseFloat(u.staked || 0), 0);
+            document.getElementById('statTotalStaked').innerText = totalStaked.toFixed(2) + ' CX';
+            const totalRefBonus = users.reduce((acc, u) => acc + u.referrals.reduce((a, r) => a + parseFloat(r.bonusReceived ||
+                0), 0), 0);
+            document.getElementById('statReferrals').innerText = totalRefBonus.toFixed(2) + ' CX';
+        }
+
+        // ============================================================
+        // ADMIN TABS
+        // ============================================================
+        function switchAdminTab(tabName) {
+            currentAdminTab = tabName;
+            document.querySelectorAll('.admin-sec').forEach(sec => sec.classList.add('hidden'));
+            const target = document.getElementById(`adminSection-${tabName}`);
+            if (target) target.classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn-admin').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById(`adminTab-${tabName}`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            if (tabName === 'users') renderAdminUsers();
+            if (tabName === 'sellRequests') renderAdminSellRequests();
+            if (tabName === 'buyRequests') renderAdminBuyRequests();
+            if (tabName === 'transactions') renderAdminTransactions();
+            if (tabName === 'staking') renderAdminStaking();
+        }
+
+        // ============================================================
+        // ADMIN USERS
+        // ============================================================
+        function renderAdminUsers() {
+            const list = document.getElementById('adminUserList');
+            list.innerHTML = '';
+            if (users.length === 0) {
+                list.innerHTML = `<p class="text-slate-500 text-center py-2">कोई यूजर रजिस्टर्ड नहीं है।</p>`;
+                return;
+            }
+            users.forEach(u => {
+                const joinDate = u.$createdAt ? new Date(u.$createdAt).toLocaleDateString('hi-IN') : 'N/A';
+                const card = document.createElement('div');
+                card.className = 'bg-slate-950 p-3 rounded-lg border border-slate-800 space-y-1';
+                card.innerHTML = `
+                    <div class="flex justify-between font-bold text-amber-400 text-xs">
+                        <span>${u.name || 'N/A'}</span>
+                        <span class="text-white">${parseFloat(u.coins || 0).toFixed(2)} CX (User) / ${parseFloat(u.buySellWallet || 0).toFixed(2)} CX (Trade)</span>
+                    </div>
+                    <div class="text-[10px] text-slate-400 grid grid-cols-2 gap-1 pb-1">
+                        <span>ईमेल: ${u.email || 'N/A'} <button onclick="copyToClipboard('adminEmail-${u.$id}', '✅ Email कॉपी!')" class="text-amber-400 hover:text-white"><i class="fa-solid fa-copy text-[8px]"></i></button></span>
+                        <span>मोबाइल: ${u.phone || 'N/A'} <button onclick="copyToClipboard('adminPhone-${u.$id}', '✅ Phone कॉपी!')" class="text-amber-400 hover:text-white"><i class="fa-solid fa-copy text-[8px]"></i></button></span>
+                        <span>CoinX ID: ${u.coinxId || 'N/A'} <button onclick="copyToClipboard('adminCoinX-${u.$id}', '✅ CoinX ID कॉपी!')" class="text-amber-400 hover:text-white"><i class="fa-solid fa-copy text-[8px]"></i></button></span>
+                        <span>Staked: ${parseFloat(u.staked || 0).toFixed(2)} CX</span>
+                    </div>
+                    <div class="flex justify-between items-center pt-1 border-t border-slate-900/60 text-[10px] text-slate-500">
+                        <span>ज्वाइनिंग: ${joinDate}</span>
+                        <button onclick="toggleUserBlockStatus('${u.$id}')" class="text-[9px] px-2.5 py-0.5 rounded font-bold ${u.isBlocked ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}">
+                            ${u.isBlocked ? 'Unblock' : 'Block'}
+                        </button>
+                    </div>
+                    <span id="adminEmail-${u.$id}" class="hidden">${u.email || ''}</span>
+                    <span id="adminPhone-${u.$id}" class="hidden">${u.phone || ''}</span>
+                    <span id="adminCoinX-${u.$id}" class="hidden">${u.coinxId || ''}</span>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        async function toggleUserBlockStatus(userDocId) {
+            const index = users.findIndex(u => u.$id === userDocId);
+            if (index === -1) return;
+            const newStatus = !users[index].isBlocked;
+            try {
+                await databases.updateDocument(DATABASE_ID, USERS_COLLECTION_ID, users[index].docId, { isBlocked: newStatus });
+                users[index].isBlocked = newStatus;
+                showToast(`यूजर को ${newStatus ? 'Block' : 'Unblock'} किया गया।`, 'success');
+                renderAdminUsers();
+            } catch (e) {
+                showToast('यूजर स्टेटस अपडेट में त्रुटि!', 'error');
+            }
+        }
+
+        async function updateUserCoinsManually(btn) {
+            const targetId = document.getElementById('adminCoinUserId').value.trim();
+            const coinAmount = parseFloat(document.getElementById('adminCoinAmount').value);
+            const action = document.getElementById('adminCoinAction').value;
+            const wallet = document.getElementById('adminCoinWallet').value;
+
+            if (!targetId || !Number.isFinite(coinAmount) || coinAmount <= 0 || coinAmount > 1000000) {
+                showToast("सही आईडी/ईमेल और मान्य कॉइन संख्या भरें।", 'error');
+                return;
+            }
+
+            setButtonLoading(btn, true);
+            try {
+                const uIndex = users.findIndex(u => u.$id === targetId || u.email === targetId);
+                if (uIndex === -1) { showToast("यूजर नहीं मिला!", 'error');
+                    setButtonLoading(btn, false); return; }
+
+                const field = wallet === 'user' ? 'coins' : 'buySellWallet';
+                const currentBalance = parseFloat(users[uIndex][field] || 0);
+                const newBalance = action === 'add' ? currentBalance + coinAmount : Math.max(0, currentBalance - coinAmount);
+
+                await databases.updateDocument(DATABASE_ID, USERS_COLLECTION_ID, users[uIndex].docId, {
+                    [field]: newBalance
+                });
+                users[uIndex][field] = newBalance;
+                showToast(action === 'add' ? `${coinAmount} कॉइन्स क्रेडिट!` : `${coinAmount} कॉइन्स डेबिट!`, 'success');
+                document.getElementById('adminCoinUserId').value = '';
+                document.getElementById('adminCoinAmount').value = '';
+                updateAdminDashboardStats();
+                renderAdminUsers();
+            } catch (e) {
+                showToast('बैलेंस अपडेट में त्रुटि!', 'error');
+            } finally {
+                setButtonLoading(btn, false);
+            }
+        }
+
+        // ============================================================
+        // ADMIN SELL REQUESTS
+        // ============================================================
+        function renderAdminSellRequests() {
+            const list = document.getElementById('adminSellRequestsList');
+            list.innerHTML = '';
+
+            const pending = users.filter(u => u.sellRequests && u.sellRequests.some(r => r.status === 'Pending'));
+
+            if (pending.length === 0) {
+                list.innerHTML = `<p class="text-slate-500 text-center py-4">कोई पेंडिंग सेल रिक्वेस्ट नहीं है।</p>`;
+                return;
+            }
+
+            pending.forEach(u => {
+                u.sellRequests.forEach((req, idx) => {
+                    if (req.status !== 'Pending') return;
+                    const card = document.createElement('div');
+                    card.className = 'req-card';
+                    card.innerHTML = `
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div>
+                                <div class="req-user">${u.name} (${u.email})</div>
+                                <div class="req-amount">${req.coinsAmount} CX</div>
+                                <div class="req-detail">UPI: ${req.address || 'N/A'} | ${req.dateTime || 'N/A'}</div>
+                            </div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="badge-pending">⏳ Pending</span>
+                                <button onclick="openSessionChat('${u.email}', 'Sell', '${req.coinsAmount}')" class="btn-session">
+                                    <i class="fa-brands fa-rocketchat"></i> Session
+                                </button>
+                                <button onclick="approveSellRequest('${u.$id}', ${idx}, this)" class="bg-green-500 text-slate-950 font-bold px-3 py-1 rounded text-[10px] btn-animate">Approve</button>
+                                <button onclick="rejectSellRequest('${u.$id}', ${idx}, this)" class="bg-red-500 text-white font-bold px-3 py-1 rounded text-[10px] btn-animate">Reject</button>
+                            </div>
+                        </div>
+                    `;
+                    list.appendChild(card);
+                });
+            });
+        }
+
+        async function approveSellRequest(userDocId, reqIndex, btn) {
+            setButtonLoading(btn, true);
+            const uIndex = users.findIndex(u => u.$id === userDocId);
+            if (uIndex === -1) { setButtonLoading(btn, false); return; }
+            try {
+                const fresh = await databases.getDocument(DATABASE_ID, USERS_COLLECTION_ID, userDocId);
+                const sellRequests = parseJsonSafe(fresh.sell_requests, []);
+                if (reqIndex >= sellRequests.length || sellRequests[reqIndex].status !== 'Pending') {
+                    showToast('यह रिक्वेस्ट पहले ही प्रोसेस हो चुकी है!', 'info');
+                    renderAdminSellRequests();
+                    return;
+                }
+                sellRequests[reqIndex].status = 'Completed';
+                await databases.updateDocument(DATABASE_ID, USERS_COLLECTION_ID, userDocId, {
+                    sell_requests: JSON.stringify(sellRequests)
+                });
+                const approvedWith = parseJsonSafe(fresh.approved_withdrawal, []);
+                approvedWith.push({ ...sellRequests[reqIndex], type: 'sell_trade', approvedAt: new Date().toISOString() });
+                await databases.updateDocument(DATABASE_ID, USERS_COLLECTION_ID, userDocId, {
+                    approved_withdrawal: JSON.stringify(approvedWith)
+                });
+                users[uIndex].sellRequests = sellRequests;
+                users[uIndex].approvedWithdrawals = approvedWith;
+                showToast("✅ सेल रिक्वेस्ट स्वीकृत!", 'success');
+                updateAdminDashboardStats();
+                renderAdminSellRequests();
+            } catch (e) {
+                showToast('सेल रिक्वेस्ट स्वीकृत करने में त्रुटि!', 'error');
+            } finally {
+                setButtonLoading(btn, false);
+            }
+        }
+
+        async function rejectSellRequest(userDocId, reqIndex, btn) {
+            setButtonLoading(btn, true);
+            const uIndex = users.findIndex(u => u.$id === userDocId);
+            if (uIndex === -1) { setButtonLoading(btn, false); return; }
+            try {
+                const fresh = await databases.getDocument(DATABASE_ID, USERS_COLLECTION_ID, userDocId);
+                const sellRequests = parseJsonSafe(fresh.sell_requests, []);
+                if (reqIndex >= sellRequests.length || sellRequests[reqIndex].status !== 'Pending') {
+                    showToast('यह रिक्वेस्ट पहले ही प्रोसेस हो चुकी है!', 'info');
+                    renderAdminSellRequests();
+                    return;
+                }
+                const refundAmount = sellRequests[reqIndex].coinsAmount;
+                const newWallet = parseFloat(fresh.buySellWallet || 0) + refundAmount;
+                sellRequests[reqIndex].status = 'Rejected';
+                await databases.updateDocument(DATABASE_ID, USERS_COLLECTION_ID, userDocId, {
+                    sell_requests: JSON.stringify(sellRequests),
+                    buySellWallet: newWallet
+                });
+                users[uIndex].sellRequests = sellRequests;
+                users[uIndex].buySellWallet = newWallet;
+                showToast("❌ सेल रिक्वेस्ट अस्वीकृत! कॉइन्स रिफंड!", 'info');
+                updateAdminDashboardStats();
+                renderAdminSellRequests();
+            } catch (e) {
+                showToast('सेल रिक्वेस्ट अस्वीकृत करने में त्रुटि!', 'error');
+            } finally {
+                setButtonLoading(btn, false);
+            }
+        }
+
+        // ============================================================
+        // ADMIN BUY REQUESTS
+        // ============================================================
+        function renderAdminBuyRequests() {
+            const list = document.getElementById('adminBuyRequestsList');
+            list.innerHTML = '';
+
+            const pending = users.filter(u => u.buyRequests && u.buyRequests.some(r => r.status === 'Pending'));
+
+            if (pending.length === 0) {
+                list.innerHTML = `<p class="text-slate-500 text-center py-4">कोई पेंडिंग बाय रिक्वेस्ट नहीं है।</p>`;
+                return;
+            }
+
+            pending.forEach(u => {
+                u.buyRequests.forEach((req, idx) => {
+                    if (req.status !== 'Pending') return;
+                    const card = document.createElement('div');
+                    card.className = 'req-card';
+                    card.innerHTML = `
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div>
+                                <div class="req-user">${u.name} (${u.email})</div>
+                                <div class="req-amount">${req.coinsAmount} CX (₹${req.inrAmount || 'N/A'})</div>
+                                <div class="req-detail">UPI: ${req.upi || 'N/A'} | ${req.dateTime || 'N/A'}</div>
+                            </div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="badge-pending">⏳ Pending</span>
+                                <button onclick="openSessionChat('${u.email}', 'Buy', '${req.coinsAmount}')" class="btn-session">
+                                    <i class="fa-brands fa-rocketchat"></i> Session
+                                </button>
+                                <button onclick="approveBuyRequest('${u.$id}', ${idx}, this)" class="bg-green-500 text-slate-950 font-bold px-3 py-1 rounded text-[10px] btn-animate">Approve</button>
+                                <button onclick="rejectBuyRequest('${u.$id}', ${idx}, this)" class="bg-red-500 text-white font-bold px-3 py-1 rounded text-[10px] btn-animate">Reject</button>
+                            </div>
+                        </div>
+                    `;
+                    list.appendChild(card);
+                });
+            });
+        }
+
+        async function approveBuyRequest(userDocId, reqIndex, btn) {
+            setButtonLoading(btn, true);
+            const uIndex = users.findIndex(u => u.$id === userDocId);
+            if (uIndex === -1) { setButtonLoading(btn, false); return; }
+            try {
+                const fresh = await databases.getDocument(DATABASE_ID, USERS_COLLECTION_ID, userDocId);
+                const buyRequests = parseJsonSafe(fresh.buy_requests, []);
+                if (reqIndex >= buyRequests.length || buyRequests[reqIndex].status !== 'Pending') {
+                    showToast('यह रिक्वेस्ट पहले ही प्रोसेस हो चुकी है!', 'info');
+                    renderAdminBuyRequests();
+                    return;
+                }
+                // Credit coins to user's Buy/Sell Wallet
+                const coinsToAdd = buyRequests[reqIndex].coinsAmount;
+                const newWallet = parseFloat(fresh.buySellWallet || 0) + coinsToAdd;
+                buyRequests[reqIndex].status = 'Completed';
+                await databases.updateDocument(DATABASE_ID, USERS_COLLECTION_ID, userDocId, {
+                    buy_requests: JSON.stringify(buyRequests),
+                    buySellWallet: newWallet
+                });
+                // Add to transactions
+                const transactions = parseJsonSafe(fresh.transactions, []);
+                transactions.push({
+                    type: 'buy',
+                    amount: coinsToAdd,
+                    inr: buyRequests[reqIndex].inrAmount || 0,
+                    fromEmail: 'Admin',
+                    toEmail: fresh.email,
+                    status: 'completed',
+                    dateTime: new Date().toLocaleString('hi-IN')
+                });
+                await databases.updateDocument(DATABASE_ID, USERS_COLLECTION_ID, userDocId, {
+                    transactions: JSON.stringify(transactions)
+                });
+                users[uIndex].buyRequests = buyRequests;
+                users[uIndex].buySellWallet = newWallet;
+                users[uIndex].transactions = transactions;
+                showToast(`✅ बाय रिक्वेस्ट स्वीकृत! ${coinsToAdd} CX क्रेडिट!`, 'success');
+                updateAdminDashboardStats();
+                renderAdminBuyRequests();
+            } catch (e) {
+                showToast('बाय रिक्वेस्ट स्वीकृत करने में त्रुटि!', 'error');
+            } finally {
+                setButtonLoading(btn, false);
+            }
+        }
+
+        async function rejectBuyRequest(userDocId, reqIndex, btn) {
+            setButtonLoading(btn, true);
+            const uIndex = users.findIndex(u => u.$id === userDocId);
+            if (uIndex === -1) { setButtonLoading(btn, false); return; }
+            try {
+                const fresh = await databases.getDocument(DATABASE_ID, USERS_COLLECTION_ID, userDocId);
+                const buyRequests = parseJsonSafe(fresh.buy_requests, []);
+                if (reqIndex >= buyRequests.length || buyRequests[reqIndex].status !== 'Pending') {
+                    showToast('यह रिक्वेस्ट पहले ही प्रोसेस हो चुकी है!', 'info');
+                    renderAdminBuyRequests();
+                    return;
+                }
+                buyRequests[reqIndex].status = 'Rejected';
+                await databases.updateDocument(DATABASE_ID, USERS_COLLECTION_ID, userDocId, {
+                    buy_requests: JSON.stringify(buyRequests)
+                });
+                users[uIndex].buyRequests = buyRequests;
+                showToast("❌ बाय रिक्वेस्ट अस्वीकृत!", 'info');
+                updateAdminDashboardStats();
+                renderAdminBuyRequests();
+            } catch (e) {
+                showToast('बाय रिक्वेस्ट अस्वीकृत करने में त्रुटि!', 'error');
+            } finally {
+                setButtonLoading(btn, false);
+            }
+        }
+
+        // ============================================================
+        // ADMIN TRANSACTIONS
+        // ============================================================
+        function filterAdminHistory(type) {
+            adminHistoryFilter = type;
+            document.querySelectorAll('#adminSection-transactions .filter-tabs button').forEach(b => b.classList.remove(
+            'active'));
+            if (event && event.target) event.target.classList.add('active');
+            renderAdminTransactions();
+        }
+
+        function renderAdminTransactions() {
+            const list = document.getElementById('adminTransactionsList');
+            list.innerHTML = '';
+
+            let allTxs = [];
+            users.forEach(u => {
+                (u.transactions || []).forEach(t => {
+                    allTxs.push({ ...t, userName: u.name, userEmail: u.email, userId: u.$id });
+                });
+                // Also include sell requests as transactions
+                (u.sellRequests || []).forEach(r => {
+                    if (r.status === 'Completed') {
+                        allTxs.push({
+                            type: 'sell',
+                            amount: r.coinsAmount,
+                            address: r.address,
+                            dateTime: r.dateTime,
+                            status: r.status,
+                            userName: u.name,
+                            userEmail: u.email,
+                            userId: u.$id
+                        });
+                    }
+                });
+                // Also include buy requests as transactions
+                (u.buyRequests || []).forEach(r => {
+                    if (r.status === 'Completed') {
+                        allTxs.push({
+                            type: 'buy',
+                            amount: r.coinsAmount,
+                            inr: r.inrAmount,
+                            upi: r.upi,
+                            dateTime: r.dateTime,
+                            status: r.status,
+                            userName: u.name,
+                            userEmail: u.email,
+                            userId: u.$id
+                        });
+                    }
+                });
+            });
+
+            if (adminHistoryFilter !== 'all') {
+                allTxs = allTxs.filter(t => t.type === adminHistoryFilter);
+            }
+
+            if (allTxs.length === 0) {
+                list.innerHTML = `<p class="text-slate-500 text-center py-4">कोई लेनदेन नहीं है।</p>`;
+                return;
+            }
+
+            allTxs.sort((a, b) => {
+                const da = a.dateTime ? new Date(a.dateTime).getTime() : 0;
+                const db = b.dateTime ? new Date(b.dateTime).getTime() : 0;
+                return db - da;
+            });
+
+            allTxs.forEach(t => {
+                const typeMap = {
+                    'buy': '🟢 Buy',
+                    'sell': '🔴 Sell',
+                    'deposit': '🔵 Deposit',
+                    'transfer': '🔄 Transfer',
+                    'withdrawal': '🟡 Withdrawal',
+                    'admin': '📞 Support',
+                    'transfer_trade': '🟣 Trade Transfer',
+                    'stake': '⭐ Staking',
+                    'prize': '🎁 Prize'
+                };
+                const typeLabel = typeMap[t.type] || t.type || 'Unknown';
+                const typeClass = t.type === 'buy' ? 'type-buy' : t.type === 'sell' ? 'type-sell' : t.type === 'deposit' ?
+                    'type-deposit' : t.type === 'transfer' ? 'type-transfer' : t.type === 'transfer_trade' ?
+                    'type-transfer' : t.type === 'withdrawal' ? 'type-withdrawal' : t.type === 'admin' ? 'type-admin' :
+                    t.type === 'stake' ? 'type-stake' : t.type === 'prize' ? 'type-prize' : '';
+
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="font-bold ${typeClass}">${typeLabel}</span>
+                            <span class="text-xs font-bold text-white ml-2">${t.amount || t.coins || 0} CX</span>
+                        </div>
+                        <span class="text-[10px] text-slate-500">${t.dateTime || ''}</span>
+                    </div>
+                    <div class="text-[9px] text-slate-500 flex justify-between flex-wrap gap-1">
+                        <span>👤 ${t.userName || 'N/A'} (${t.userEmail || 'N/A'})</span>
+                        ${t.fromEmail ? `<span>⬅️ ${t.fromEmail}</span>` : ''}
+                        ${t.toEmail ? `<span>➡️ ${t.toEmail}</span>` : ''}
+                        ${t.inr ? `<span>₹${t.inr}</span>` : ''}
+                        ${t.address ? `<span>UPI: ${t.address}</span>` : ''}
+                        ${t.upi ? `<span>UPI: ${t.upi}</span>` : ''}
+                    </div>
+                    <div class="text-[8px] text-slate-400">${t.status || 'completed'}</div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        // ============================================================
+        // ADMIN STAKING
+        // ============================================================
+        function renderAdminStaking() {
+            const list = document.getElementById('adminStakingList');
+            list.innerHTML = '';
+
+            let found = false;
+            users.forEach(u => {
+                if (u.staking && u.staking.length > 0) {
+                    u.staking.forEach(stake => {
+                        found = true;
+                        const now = Date.now();
+                        const isExpired = stake.lockUntil <= now;
+                        const div = document.createElement('div');
+                        div.className = 'bg-slate-950 p-2.5 rounded-lg border border-slate-800 flex justify-between items-center';
+                        div.innerHTML = `
+                            <div>
+                                <div class="font-bold text-amber-400 text-xs">${u.name} (${u.email})</div>
+                                <div class="text-[9px] text-slate-400">प्रारंभ: ${stake.startDate || 'N/A'} (${stake.days} दिन)</div>
+                                <div class="text-[8px] text-slate-500">Amount: ${Number(stake.amount).toFixed(2)} CX</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-[10px] text-slate-500">Unlock: ${new Date(stake.lockUntil).toLocaleDateString('hi-IN')}</div>
+                                <button onclick="adminUnlockStake('${u.$id}', '${stake.stakeId}', this)" class="mt-1 bg-green-500 hover:bg-green-600 text-slate-950 font-bold px-3 py-1 rounded text-[9px] btn-animate">
+                                    ${isExpired ? '🔓 Unlock (Expired)' : '🔓 Unlock'}
+                                </button>
+                            </div>
+                        `;
+                        list.appendChild(div);
+                    });
+                }
+            });
+
+            if (!found) {
+                list.innerHTML = `<p class="text-slate-500 text-center py-2">कोई स्टैकिंग नहीं है।</p>`;
+            }
+        }
+
+        async function adminUnlockStake(userDocId, stakeId, btn) {
+            setButtonLoading(btn, true);
+            try {
+                const uIndex = users.findIndex(u => u.$id === userDocId);
+                if (uIndex === -1) { setButtonLoading(btn, false);
+                    showToast('यूजर नहीं मिला!', 'error'); return; }
+
+                const stakeIndex = users[uIndex].staking.findIndex(s => s.stakeId === stakeId);
+                if (stakeIndex === -1) { setButtonLoading(btn, false);
+                    showToast('स्टेकिंग नहीं मिली!', 'error'); return; }
+
+                const stake = users[uIndex].staking[stakeIndex];
+                const newCoins = parseFloat(users[uIndex].coins || 0) + parseFloat(stake.amount);
+                const newStaked = Math.max(0, parseFloat(users[uIndex].staked || 0) - parseFloat(stake.amount));
+                const remainingStakes = users[uIndex].staking.filter(s => s.stakeId !== stakeId);
+
+                await databases.updateDocument(DATABASE_ID, USERS_COLLECTION_ID, userDocId, {
+                    coins: newCoins,
+                    staked: newStaked,
+                    staking: JSON.stringify(remainingStakes)
+                });
+
+                users[uIndex].coins = newCoins;
+                users[uIndex].staked = newStaked;
+                users[uIndex].staking = remainingStakes;
+
+                showToast(`✅ ${stake.amount} CX अनलॉक हो गया!`, 'success');
+                renderAdminStaking();
+                updateAdminDashboardStats();
+            } catch (e) {
+                showToast('अनलॉक करने में त्रुटि!', 'error');
+            } finally {
+                setButtonLoading(btn, false);
+            }
+        }
+
+        // ============================================================
+        // CHECK EXISTING ADMIN SESSION
+        // ============================================================
+        async function checkExistingAdminSession() {
+            try {
+                await account.get();
+                const isAdmin = await verifyAdminAccess();
+                if (isAdmin) {
+                    document.getElementById('adminLoginPage').classList.add('hidden');
+                    document.getElementById('adminDashboardPage').classList.remove('hidden');
+                    await loadAllData();
+                } else {
+                    await account.deleteSession('current').catch(() => {});
+                }
+            } catch (e) {}
+        }
+
+        // ============================================================
+        // INITIALIZATION
+        // ============================================================
+        window.onload = async function() {
+            // Always show admin login initially
+            document.getElementById('adminLoginPage').classList.remove('hidden');
+            document.getElementById('adminDashboardPage').classList.add('hidden');
+            await checkExistingAdminSession();
+        };
+    </script>
+
+</body>
+</html>
