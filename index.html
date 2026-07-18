@@ -12,7 +12,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Poppins', sans-serif; background: #0a0712; overflow-x: hidden; color: #f5e6d3; min-height: 100vh; }
         
-        /* ===== BUTTERFLIES BACKGROUND ===== */
+        /* ===== BUTTERFLIES ===== */
         .butterfly-bg {
             position: fixed;
             top: 0;
@@ -32,11 +32,11 @@
             will-change: transform;
         }
         @keyframes floatButterfly {
-            0% { transform: translate(0, 0) rotate(0deg) scale(0.8); opacity: 0.2; }
-            25% { transform: translate(80px, -120px) rotate(15deg) scale(1.2); opacity: 0.7; }
-            50% { transform: translate(-60px, -220px) rotate(-10deg) scale(0.9); opacity: 0.8; }
-            75% { transform: translate(100px, -340px) rotate(18deg) scale(1.3); opacity: 0.5; }
-            100% { transform: translate(-20px, -480px) rotate(-8deg) scale(0.7); opacity: 0.1; }
+            0% { transform: translate(0,0) rotate(0deg) scale(0.8); opacity: 0.2; }
+            25% { transform: translate(80px,-120px) rotate(15deg) scale(1.2); opacity: 0.7; }
+            50% { transform: translate(-60px,-220px) rotate(-10deg) scale(0.9); opacity: 0.8; }
+            75% { transform: translate(100px,-340px) rotate(18deg) scale(1.3); opacity: 0.5; }
+            100% { transform: translate(-20px,-480px) rotate(-8deg) scale(0.7); opacity: 0.1; }
         }
         
         /* ===== GLASS THEME ===== */
@@ -54,7 +54,7 @@
         ::-webkit-scrollbar-thumb { background: #d4af37; border-radius: 20px; }
         
         /* ===== SIDEBAR ===== */
-        .admin-sidebar { background: rgba(10,6,18,0.92); backdrop-filter: blur(20px); border-right: 1px solid rgba(212,175,55,0.1); }
+        .admin-sidebar { background: rgba(10,6,18,0.92); backdrop-filter: blur(20px); border-right: 1px solid rgba(212,175,55,0.1); width: 240px; flex-shrink: 0; }
         .admin-sidebar .nav-item { padding: 12px 18px; border-radius: 12px; transition: all 0.3s; cursor: pointer; display: flex; align-items: center; gap: 12px; color: #8a7a9a; font-size: 13px; }
         .admin-sidebar .nav-item:hover { background: rgba(212,175,55,0.08); color: #f5e6d3; transform: translateX(4px); }
         .admin-sidebar .nav-item.active { background: rgba(212,175,55,0.15); color: #d4af37; border-left: 3px solid #d4af37; }
@@ -102,6 +102,22 @@
         .badge-pending { background: rgba(251,191,36,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); padding: 2px 10px; border-radius: 20px; font-size: 9px; }
         .badge-approved { background: rgba(52,211,153,0.15); color: #34d399; border: 1px solid rgba(52,211,153,0.2); padding: 2px 10px; border-radius: 20px; font-size: 9px; }
         .badge-rejected { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.2); padding: 2px 10px; border-radius: 20px; font-size: 9px; }
+        
+        /* Receipt Modal */
+        .receipt-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .receipt-modal .receipt-card { background: linear-gradient(145deg, #1a1228, #0d0a18); border: 1px solid rgba(212,175,55,0.3); border-radius: 24px; max-width: 460px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 28px 24px; box-shadow: 0 30px 80px rgba(0,0,0,0.8); }
+        .receipt-modal .receipt-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 12px; }
+        .receipt-modal .receipt-row .label { color: #a78bbf; }
+        .receipt-modal .receipt-row .value { color: #f1e6f5; text-align: right; word-break: break-all; font-family: monospace; }
+        .receipt-modal .receipt-row .value.highlight { color: #d4af37; font-weight: 600; }
+        .receipt-modal .receipt-footer { margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(212,175,55,0.15); display: flex; gap: 10px; flex-wrap: wrap; }
+        .receipt-modal .receipt-footer button { flex: 1; min-width: 100px; padding: 10px 16px; border-radius: 12px; font-size: 11px; font-weight: 600; border: none; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .receipt-modal .receipt-footer .btn-download { background: linear-gradient(145deg, #d4af37, #c9a030); color: #0a0712; box-shadow: 0 4px 20px rgba(212,175,55,0.3); }
+        .receipt-modal .receipt-footer .btn-print { background: rgba(255,255,255,0.08); color: #d4b0e0; border: 1px solid rgba(255,255,255,0.1); }
+        .receipt-modal .receipt-logo { text-align: center; padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid rgba(212,175,55,0.1); }
+        .receipt-modal .receipt-logo span { font-size: 24px; font-weight: 800; background: linear-gradient(135deg, #f5d97e, #d4af37, #c9a030); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .receipt-modal .receipt-close { background: rgba(212,175,55,0.15); border: none; color: #d4af37; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 16px; transition: all 0.3s; display: flex; align-items: center; justify-content: center; }
+        .receipt-modal .receipt-close:hover { background: rgba(212,175,55,0.3); }
     </style>
 </head>
 <body>
@@ -111,6 +127,22 @@
 
     <!-- ===== TOAST ===== -->
     <div id="toastNotification"><span id="toastMessage"></span><button onclick="hideToast()"><i class="fa-solid fa-xmark"></i></button></div>
+
+    <!-- ===== RECEIPT MODAL ===== -->
+    <div id="receiptModal" class="receipt-modal hidden">
+        <div class="receipt-card" id="receiptCard">
+            <div class="receipt-logo"><span>CoinX Network</span><small style="display:block;font-size:9px;color:#6b4a7a;">Premium • Gold Edition</small></div>
+            <div class="flex justify-between items-center border-b border-amber-500/15 pb-3 mb-3">
+                <h3 class="text-lg font-bold text-amber-400"><i class="fa-solid fa-receipt mr-2"></i> लेनदेन रसीद</h3>
+                <button class="receipt-close" onclick="closeReceipt()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="receiptContent"></div>
+            <div class="receipt-footer">
+                <button class="btn-download" onclick="downloadReceipt()"><i class="fa-solid fa-download"></i> डाउनलोड</button>
+                <button class="btn-print" onclick="printReceipt()"><i class="fa-solid fa-print"></i> प्रिंट</button>
+            </div>
+        </div>
+    </div>
 
     <!-- ===== MAIN CONTAINER ===== -->
     <div id="appContainer" class="w-full max-w-7xl mx-auto relative z-10">
@@ -123,36 +155,25 @@
                     <h1 class="text-3xl font-extrabold gold-text-gradient mt-4">एडमिन पैनल</h1>
                     <p class="text-xs text-amber-300/40">CoinX Network + Wallet</p>
                 </div>
-                
                 <div id="loginError" class="login-error mb-4">
                     <i class="fa-solid fa-circle-exclamation mr-2"></i>
                     <span id="loginErrorMsg">लॉगिन विफल!</span>
                     <span class="error-detail" id="loginErrorDetail"></span>
                 </div>
-                
                 <div class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-amber-300/60 mb-1.5">एडमिन ईमेल</label>
-                        <input type="email" id="adminEmail" placeholder="अपना ईमेल दर्ज करें" class="w-full bg-black/40 border border-amber-500/20 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-amber-400 text-white transition-all">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-amber-300/60 mb-1.5">पासवर्ड</label>
-                        <input type="password" id="adminPassword" placeholder="अपना पासवर्ड दर्ज करें" class="w-full bg-black/40 border border-amber-500/20 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-amber-400 text-white transition-all" onkeydown="if(event.key==='Enter') adminLogin()">
-                    </div>
-                    <button id="loginBtn" onclick="adminLogin()" class="w-full btn-gold py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2">
-                        <span id="loginBtnText">लॉगिन करें</span> 
-                        <i id="loginBtnIcon" class="fa-solid fa-right-to-bracket"></i>
-                    </button>
+                    <div><label class="block text-xs font-semibold text-amber-300/60 mb-1.5">एडमिन ईमेल</label><input type="email" id="adminEmail" placeholder="अपना ईमेल दर्ज करें" class="w-full bg-black/40 border border-amber-500/20 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-amber-400 text-white transition-all"></div>
+                    <div><label class="block text-xs font-semibold text-amber-300/60 mb-1.5">पासवर्ड</label><input type="password" id="adminPassword" placeholder="अपना पासवर्ड दर्ज करें" class="w-full bg-black/40 border border-amber-500/20 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-amber-400 text-white transition-all" onkeydown="if(event.key==='Enter') adminLogin()"></div>
+                    <button id="loginBtn" onclick="adminLogin()" class="w-full btn-gold py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2"><span id="loginBtnText">लॉगिन करें</span> <i id="loginBtnIcon" class="fa-solid fa-right-to-bracket"></i></button>
                     <p class="text-center text-[9px] text-amber-300/20 mt-2">🔒 सुरक्षित एडमिन पैनल</p>
                 </div>
             </div>
         </div>
 
         <!-- ===== ADMIN DASHBOARD ===== -->
-        <div id="adminDashboard" class="hidden min-h-screen flex flex-col md:flex-row">
+        <div id="adminDashboard" class="hidden min-h-screen flex">
 
             <!-- SIDEBAR -->
-            <div class="admin-sidebar w-full md:w-64 p-4 md:min-h-screen flex-shrink-0">
+            <div class="admin-sidebar p-4 min-h-screen flex-shrink-0 overflow-y-auto">
                 <div class="flex items-center gap-3 mb-6 pb-4 border-b border-amber-500/10">
                     <div class="w-10 h-10 rounded-full gold-bg-gradient flex items-center justify-center text-[#0a0712] font-extrabold">CX</div>
                     <div><h2 class="font-bold text-amber-400 text-sm">CoinX Admin</h2><span class="text-[8px] text-amber-300/30">v2.0</span></div>
@@ -164,7 +185,7 @@
                     <div class="nav-item" onclick="switchTab('withdrawals')" data-tab="withdrawals"><i class="fa-solid fa-arrow-up-right-from-square"></i> विथड्रॉवल <span id="withdrawBadge" class="ml-auto text-[9px] bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded-full">0</span></div>
                     <div class="nav-item" onclick="switchTab('staking')" data-tab="staking"><i class="fa-solid fa-lock"></i> स्टेकिंग</div>
                     <div class="nav-item" onclick="switchTab('send')" data-tab="send"><i class="fa-solid fa-paper-plane"></i> कॉइन भेजें</div>
-                    <div class="nav-item" onclick="switchTab('history')" data-tab="history"><i class="fa-solid fa-clock-rotate-left"></i> हिस्ट्री</div>
+                    <div class="nav-item" onclick="switchTab('transactions')" data-tab="transactions"><i class="fa-solid fa-clock-rotate-left"></i> लेनदेन</div>
                     <div class="nav-item" onclick="switchTab('settings')" data-tab="settings"><i class="fa-solid fa-gear"></i> सेटिंग्स</div>
                 </nav>
                 <div class="mt-6 pt-4 border-t border-amber-500/10">
@@ -206,7 +227,7 @@
                             <div class="bg-black/30 p-2 rounded-lg"><span class="text-amber-300/40">Staking:</span> <span id="stakingStatus" class="text-green-400">✅ Active</span></div>
                             <div class="bg-black/30 p-2 rounded-lg"><span class="text-amber-300/40">Admin:</span> <span id="adminStatus" class="text-green-400">✅ Online</span></div>
                             <div class="bg-black/30 p-2 rounded-lg"><span class="text-amber-300/40">Database:</span> <span id="dbStatus" class="text-green-400">✅ Connected</span></div>
-                            <div class="bg-black/30 p-2 rounded-lg"><span class="text-amber-300/40">1 USDT =</span> <span class="text-green-400">₹85</span></div>
+                            <div class="bg-black/30 p-2 rounded-lg"><span class="text-amber-300/40">1 CX =</span> <span class="text-green-400">₹1</span></div>
                         </div>
                     </div>
                 </div>
@@ -264,7 +285,7 @@
                         <div class="grid grid-cols-3 md:grid-cols-6 gap-2" id="stakingPlansList"></div>
                     </div>
                     <div class="glass-gold p-4 rounded-2xl border-amber-500/15">
-                        <h3 class="text-xs font-bold text-amber-300/60 mb-3">सभी एक्टिव स्टेकिंग <span class="text-[9px] text-amber-300/30 font-normal">(🔓 Unlock करने के लिए Click करें)</span></h3>
+                        <h3 class="text-xs font-bold text-amber-300/60 mb-3 flex items-center gap-2">सभी एक्टिव स्टेकिंग <span class="text-[9px] text-amber-300/30 font-normal">(🔓 Unlock करने के लिए Unlock बटन Click करें)</span></h3>
                         <div id="adminStakingList" class="space-y-2 max-h-[400px] overflow-y-auto"></div>
                     </div>
                 </div>
@@ -289,12 +310,12 @@
                     </div>
                 </div>
 
-                <!-- ===== HISTORY ===== -->
-                <div id="tab-history" class="tab-content hidden space-y-4">
+                <!-- ===== TRANSACTIONS ===== -->
+                <div id="tab-transactions" class="tab-content hidden space-y-4">
                     <div class="glass-gold p-4 rounded-2xl border-amber-500/15">
-                        <h3 class="text-xs font-bold text-amber-300/60 mb-3"><i class="fa-solid fa-clock-rotate-left mr-1"></i> एडमिन एक्शन हिस्ट्री</h3>
-                        <div id="adminHistoryList" class="space-y-2 max-h-[500px] overflow-y-auto">
-                            <p class="text-[10px] text-amber-300/30 text-center py-4">कोई हिस्ट्री नहीं</p>
+                        <h3 class="text-xs font-bold text-amber-300/60 mb-3"><i class="fa-solid fa-clock-rotate-left mr-1"></i> सभी लेनदेन</h3>
+                        <div id="transactionsList" class="space-y-2 max-h-[500px] overflow-y-auto">
+                            <p class="text-[10px] text-amber-300/30 text-center py-4">कोई लेनदेन नहीं</p>
                         </div>
                     </div>
                 </div>
@@ -341,17 +362,18 @@
         const ADMIN_TEAM_ID = "6a4a84580012aed57e61";
 
         // ============================================================
-        // INR CONVERSION
+        // INR CONVERSION - FIXED: 1 CX = ₹1
         // ============================================================
-        const USDT_TO_INR = 85;
+        const USDT_TO_INR = 100; // $1 = ₹100
         
+        // ✅ 1 CX = ₹1
         function coinsToINR(cxCoins) {
-            const usdt = (cxCoins * 0.90) / 100;
-            return usdt * USDT_TO_INR;
+            return cxCoins * 1; // 1 CX = ₹1
         }
 
+        // USDT BEP20: 100 CX = $1
         function coinsToUSDT(cxCoins) {
-            return (cxCoins * 0.90) / 100;
+            return cxCoins / 100;
         }
 
         function formatINR(amount) {
@@ -376,6 +398,7 @@
             ]
         };
         let isAdmin = false;
+        let receiptData = null;
 
         // ============================================================
         // UTILITY
@@ -465,7 +488,7 @@
         स्मार्ट कॉन्ट्रैक्ट: ${user.smartContract || 'N/A'}
         मुख्य वॉलेट: ${parseFloat(user.coins || 0).toFixed(2)} CX (${formatINR(coinsToINR(user.coins || 0))})
         Trade Wallet: ${parseFloat(user.tradeWallet || 0).toFixed(2)} CX (${formatINR(coinsToINR(user.tradeWallet || 0))})
-        स्टेकिंग: ${parseFloat(user.staked || 0).toFixed(2)} CX
+        स्टेकिंग: ${parseFloat(user.staked || 0).toFixed(2)} CX (${formatINR(coinsToINR(user.staked || 0))})
         विथड्रॉवल: ${parseFloat(user.withdrawal || 0).toFixed(2)} CX
         ब्लॉक स्टेटस: ${user.isBlocked ? '🔴 ब्लॉक' : '🟢 एक्टिव'}
         रेफरल्स: ${(user.referrals || []).length}
@@ -534,7 +557,6 @@
             btn.classList.add('opacity-70');
 
             try {
-                // Clear sessions
                 try { const sessions = await account.listSessions(); for (const s of sessions.sessions) { await account.deleteSession(s.$id); } } catch (e) {}
                 
                 await account.createEmailPasswordSession(email, password);
@@ -602,7 +624,7 @@
                 renderDeposits();
                 renderWithdrawals();
                 renderStaking();
-                renderHistory();
+                renderTransactions();
                 updateBadges();
             } catch (e) { showToast('डेटा लोड नहीं हो सका', 'error'); }
         }
@@ -661,7 +683,7 @@
                 'withdrawals': ['विथड्रॉवल', 'पेंडिंग विथड्रॉवल्स स्वीकार/अस्वीकार'],
                 'staking': ['स्टेकिंग', 'स्टेकिंग सेटिंग्स और अनलॉक'],
                 'send': ['कॉइन भेजें', 'Admin से किसी को भी कॉइन भेजें'],
-                'history': ['हिस्ट्री', 'सभी एडमिन एक्शन की हिस्ट्री'],
+                'transactions': ['लेनदेन', 'सभी लेनदेन की हिस्ट्री'],
                 'settings': ['सेटिंग्स', 'एडमिन सेटिंग्स']
             };
             document.getElementById('pageTitle').innerText = titles[tab]?.[0] || 'डैशबोर्ड';
@@ -670,7 +692,7 @@
             if (tab === 'deposits') renderDeposits();
             if (tab === 'withdrawals') renderWithdrawals();
             if (tab === 'staking') renderStaking();
-            if (tab === 'history') renderHistory();
+            if (tab === 'transactions') renderTransactions();
         }
 
         // ============================================================
@@ -753,8 +775,6 @@
             try {
                 await databases.updateDocument(DATABASE_ID, USERS_COLLECTION_ID, allUsers[idx].$id, { [walletType]: newBal });
                 allUsers[idx][walletType] = newBal;
-                // Add to history
-                addHistory(`${action === 'add' ? '✅ जोड़े' : '❌ घटाए'} ${amount} CX (${walletType}) → ${allUsers[idx].name} (${allUsers[idx].email})`);
                 showToast(action === 'add' ? `${amount} ${walletType} क्रेडिट!` : `${amount} ${walletType} डेबिट!`, 'success');
                 document.getElementById('adminUserId').value = '';
                 document.getElementById('adminCoinAmount').value = '';
@@ -807,7 +827,6 @@
                 allUsers[idx].coins = newCoins;
                 allUsers[idx].approvedDeposits = approved;
                 allUsers[idx].pendingDeposit = null;
-                addHistory(`✅ डिपॉजिट Approve: ${pending.coinsAmount} CX → ${allUsers[idx].name} (${allUsers[idx].email})`);
                 showToast('✅ डिपॉजिट स्वीकृत', 'success');
                 updateStats();
                 renderDeposits();
@@ -847,7 +866,7 @@
                         <div>
                             <div class="font-bold text-xs">${u.name} <span class="text-amber-300/30 text-[10px]">${u.email}</span></div>
                             <div class="text-[10px] text-amber-400">${cxAmount.toFixed(2)} CX</div>
-                            <div class="text-[10px] text-blue-400">💵 $${usdtAmount.toFixed(2)} USDT</div>
+                            <div class="text-[10px] text-blue-400">💵 $${usdtAmount.toFixed(2)} USDT (BEP20)</div>
                             <div class="text-[10px] text-green-400">💰 ${formatINR(inrAmount)}</div>
                             <div class="text-[9px] text-amber-300/20">${w.dateTime || ''}</div>
                         </div>
@@ -879,7 +898,6 @@
                 allUsers[idx].approvedWithdrawals = approved;
                 allUsers[idx].withdrawal = newWithdrawn;
                 allUsers[idx].pendingWithdrawal = null;
-                addHistory(`✅ विथड्रॉवल Complete: ${pending.coinsAmount} CX → ${allUsers[idx].name} (${allUsers[idx].email})`);
                 showToast('✅ विथड्रॉवल पूरा', 'success');
                 updateStats();
                 renderWithdrawals();
@@ -905,7 +923,7 @@
         }
 
         // ============================================================
-        // STAKING - WITH UNLOCK
+        // STAKING - WITH FIXED UNLOCK BUTTON
         // ============================================================
         function renderStakingPlans() {
             const list = document.getElementById('stakingPlansList');
@@ -958,10 +976,7 @@
                         const isUnlockable = s.lockUntil <= now;
                         const cxAmount = parseFloat(s.amount || 0);
                         const div = document.createElement('div');
-                        div.className = 'user-row cursor-pointer hover:border-amber-500/30';
-                        div.onclick = () => {
-                            if (isUnlockable) adminUnlockStake(u.$id, s.stakeId);
-                        };
+                        div.className = 'user-row';
                         div.innerHTML = `
                             <div class="flex flex-wrap items-center justify-between gap-2">
                                 <div>
@@ -972,7 +987,7 @@
                                 </div>
                                 <div class="text-right">
                                     <span class="text-[10px] ${isUnlockable ? 'text-green-400' : 'text-yellow-400'}">${isUnlockable ? '🔓 Ready' : '🔒 Locked'}</span>
-                                    ${isUnlockable ? `<div class="text-[8px] text-amber-400/50 mt-1">👆 Click to Unlock</div>` : `<div class="text-[8px] text-amber-300/20">${Math.ceil((s.lockUntil - now) / (1000*60*60*24))} दिन बाकी</div>`}
+                                    ${isUnlockable ? `<button onclick="adminUnlockStake('${u.$id}','${s.stakeId}')" class="btn-gold px-3 py-1 rounded text-[10px] mt-1">🔓 Unlock</button>` : `<div class="text-[8px] text-amber-300/20">${Math.ceil((s.lockUntil - now) / (1000*60*60*24))} दिन बाकी</div>`}
                                 </div>
                             </div>
                         `;
@@ -1005,7 +1020,6 @@
                 allUsers[idx].staked = newStaked;
                 allUsers[idx].staking = remaining;
                 allUsers[idx].stakingHistory = history;
-                addHistory(`🔓 Stake Unlock: ${stake.amount} CX → ${allUsers[idx].name} (${allUsers[idx].email})`);
                 showToast(`✅ ${stake.amount} CX अनलॉक कर दिया गया`, 'success');
                 renderStaking();
                 updateStats();
@@ -1013,7 +1027,7 @@
         }
 
         // ============================================================
-        // SEND COINS - ADMIN TO ANY USER
+        // SEND COINS
         // ============================================================
         async function sendCoinsAdmin() {
             const target = document.getElementById('sendToUser').value.trim();
@@ -1043,11 +1057,9 @@
                 const newBal = currentBal + amount;
                 await databases.updateDocument(DATABASE_ID, USERS_COLLECTION_ID, targetUser.$id, { [walletType]: newBal });
                 
-                // Update local data
                 const idx = allUsers.findIndex(u => u.$id === targetUser.$id);
                 if (idx !== -1) allUsers[idx][walletType] = newBal;
                 
-                addHistory(`📤 कॉइन भेजे: ${amount} CX (${walletType}) → ${targetUser.name} (${targetUser.email})`);
                 document.getElementById('sendResult').innerHTML = `<span class="text-green-400">✅ ${amount} CX ${targetUser.name} को ${walletType} में भेजे गए!</span>`;
                 document.getElementById('sendToUser').value = '';
                 document.getElementById('sendCoinsAmount').value = '';
@@ -1060,40 +1072,175 @@
         }
 
         // ============================================================
-        // HISTORY
+        // TRANSACTIONS WITH RECEIPT
         // ============================================================
-        function addHistory(action) {
-            const entry = {
-                action: action,
-                timestamp: new Date().toISOString(),
-                dateTime: new Date().toLocaleString('hi-IN')
-            };
-            adminHistory.unshift(entry);
-            if (adminHistory.length > 500) adminHistory.pop();
-            renderHistory();
-        }
-
-        function renderHistory() {
-            const list = document.getElementById('adminHistoryList');
+        function renderTransactions() {
+            const list = document.getElementById('transactionsList');
             list.innerHTML = '';
-            if (adminHistory.length === 0) {
-                list.innerHTML = '<p class="text-[10px] text-amber-300/30 text-center py-4">कोई हिस्ट्री नहीं</p>';
-                return;
-            }
-            adminHistory.forEach(h => {
+            let allTx = [];
+            allUsers.forEach(u => {
+                (u.transactions || []).forEach(t => {
+                    allTx.push({ ...t, userName: u.name, userEmail: u.email, userId: u.$id, userPhone: u.phone || 'N/A', wallet: 'Trade' });
+                });
+                (u.tradeHistory || []).forEach(t => {
+                    allTx.push({ ...t, userName: u.name, userEmail: u.email, userId: u.$id, userPhone: u.phone || 'N/A', wallet: 'Internal' });
+                });
+            });
+            allTx.sort((a, b) => new Date(b.dateTime) - new Date(a.dateTime));
+            if (allTx.length === 0) { list.innerHTML = '<p class="text-amber-300/30 text-center py-4 text-xs">कोई लेनदेन नहीं</p>'; return; }
+            allTx.slice(0, 100).forEach(t => {
                 const div = document.createElement('div');
                 div.className = 'user-row';
+                const typeColors = { 'transfer': 'text-blue-400', 'receive': 'text-green-400', 'internal': 'text-purple-400', 'trade_to_main': 'text-amber-400', 'main_to_trade': 'text-pink-400' };
+                const typeLabels = { 'transfer': 'भेजा', 'receive': 'प्राप्त', 'internal': 'Internal', 'trade_to_main': 'Trade→Main', 'main_to_trade': 'Main→Trade' };
+                const color = typeColors[t.type] || 'text-amber-300/50';
+                const label = typeLabels[t.type] || t.type || 'अन्य';
+                const txAmount = parseFloat(t.amount || t.receiveAmount || 0);
                 div.innerHTML = `
                     <div class="flex flex-wrap items-center justify-between gap-2">
                         <div>
-                            <div class="text-xs text-amber-300/80">${h.action}</div>
-                            <div class="text-[9px] text-amber-300/30">${h.dateTime}</div>
+                            <div class="text-xs font-bold ${color}">${label} ${txAmount.toFixed(2)} CX (${formatINR(coinsToINR(txAmount))})</div>
+                            <div class="text-[9px] text-amber-300/40">${t.userName} (${t.userEmail})</div>
+                            <div class="text-[9px] text-amber-300/30">${t.dateTime || ''}</div>
                         </div>
-                        <div class="text-[8px] text-amber-300/20">#${adminHistory.indexOf(h) + 1}</div>
+                        <div class="text-right">
+                            ${t.to ? `<div class="text-[9px] text-amber-300/30">➡️ ${t.to}</div>` : ''}
+                            ${t.from ? `<div class="text-[9px] text-amber-300/30">⬅️ ${t.from}</div>` : ''}
+                            ${t.fee ? `<div class="text-[9px] text-red-400">शुल्क: ${t.fee} CX</div>` : ''}
+                            <button onclick="viewReceipt('${t.userId}','${t.type||'transfer'}','${txAmount}','${t.dateTime||''}','${t.status||'Completed'}','${t.to||''}','${t.from||''}','${t.fee||0}')" class="bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/20 px-2 py-0.5 rounded text-[8px] mt-1">🧾 Receipt</button>
+                        </div>
                     </div>
                 `;
                 list.appendChild(div);
             });
+        }
+
+        // ============================================================
+        // RECEIPT FUNCTIONS
+        // ============================================================
+        function viewReceipt(userId, type, amount, dateTime, status, to, from, fee) {
+            const user = allUsers.find(u => u.$id === userId);
+            if (!user) { showToast('यूजर नहीं मिला!', 'error'); return; }
+            
+            receiptData = { user, type, amount, dateTime, status, to, from, fee };
+            
+            const modal = document.getElementById('receiptModal');
+            const content = document.getElementById('receiptContent');
+            
+            const isDeposit = type === 'deposit' || type === 'receive';
+            const amt = parseFloat(amount || 0);
+            
+            content.innerHTML = `
+                <div class="receipt-row"><span class="label">👤 नाम</span><span class="value">${user.name || 'N/A'}</span></div>
+                <div class="receipt-row"><span class="label">📧 ईमेल</span><span class="value">${user.email || 'N/A'}</span></div>
+                <div class="receipt-row"><span class="label">📱 मोबाइल</span><span class="value">${user.phone || 'N/A'}</span></div>
+                <div class="receipt-row"><span class="label">🆔 CoinX ID</span><span class="value">${user.coinxId || 'N/A'}</span></div>
+                <div class="receipt-row"><span class="label">🔗 Smart Contract</span><span class="value" style="font-size:10px;">${user.smartContract || 'N/A'}</span></div>
+                <div class="receipt-row"><span class="label">📋 प्रकार</span><span class="value highlight">${type || 'अन्य'}</span></div>
+                <div class="receipt-row"><span class="label">💰 राशि</span><span class="value ${isDeposit?'green':'red'}">${amt.toFixed(2)} CX (${formatINR(coinsToINR(amt))})</span></div>
+                ${to ? `<div class="receipt-row"><span class="label">➡️ भेजा</span><span class="value">${to}</span></div>` : ''}
+                ${from ? `<div class="receipt-row"><span class="label">⬅️ प्राप्त</span><span class="value">${from}</span></div>` : ''}
+                ${fee && parseFloat(fee) > 0 ? `<div class="receipt-row"><span class="label">💸 शुल्क</span><span class="value red">${fee} CX</span></div>` : ''}
+                <div class="receipt-row"><span class="label">📅 तारीख</span><span class="value">${dateTime || 'N/A'}</span></div>
+                <div class="receipt-row"><span class="label">📊 स्थिति</span><span class="value highlight">${status || 'Completed'}</span></div>
+                <div class="receipt-row"><span class="label">🌐 नेटवर्क</span><span class="value">BEP20 (USDT)</span></div>
+                <div style="border-top:1px solid rgba(212,175,55,0.08);margin-top:6px;padding-top:6px;text-align:center;">
+                    <span style="font-size:8px;color:#6b4a7a;">🔒 सुरक्षित लेनदेन • CoinX Network</span>
+                </div>
+            `;
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeReceipt() {
+            document.getElementById('receiptModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            receiptData = null;
+        }
+
+        function downloadReceipt() {
+            if (!receiptData) return;
+            const { user, type, amount, dateTime, status, to, from, fee } = receiptData;
+            const amt = parseFloat(amount || 0);
+            const html = `
+                <html>
+                <head><title>CoinX_Receipt</title>
+                <style>
+                    body { font-family: 'Poppins', sans-serif; background: #0d0a12; padding: 20px; color: #f1e6f5; }
+                    .receipt-card { background: #1a1228; border-radius: 16px; padding: 24px; max-width: 460px; margin: 0 auto; border: 1px solid rgba(212,175,55,0.2); }
+                    .receipt-logo { text-align: center; padding-bottom: 12px; border-bottom: 1px solid rgba(212,175,55,0.1); }
+                    .receipt-logo span { font-size: 22px; font-weight: 800; background: linear-gradient(135deg,#f5d97e,#d4af37,#c9a030); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+                    .receipt-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 12px; }
+                    .receipt-row .label { color: #a78bbf; }
+                    .receipt-row .value { color: #f1e6f5; text-align: right; }
+                    .receipt-row .value.highlight { color: #d4af37; font-weight: 600; }
+                    .receipt-row .value.green { color: #34d399; }
+                    .receipt-row .value.red { color: #f87171; }
+                    .watermark { text-align: center; font-size: 8px; color: #6b4a7a; margin-top: 8px; padding-top: 6px; border-top: 1px solid rgba(212,175,55,0.08); }
+                </style>
+                </head>
+                <body>
+                <div class="receipt-card">
+                    <div class="receipt-logo"><span>CoinX Network</span><small style="display:block;font-size:9px;color:#6b4a7a;">Premium • Gold Edition</small></div>
+                    <div class="receipt-row"><span class="label">👤 नाम</span><span class="value">${user.name || 'N/A'}</span></div>
+                    <div class="receipt-row"><span class="label">📧 ईमेल</span><span class="value">${user.email || 'N/A'}</span></div>
+                    <div class="receipt-row"><span class="label">📱 मोबाइल</span><span class="value">${user.phone || 'N/A'}</span></div>
+                    <div class="receipt-row"><span class="label">🆔 CoinX ID</span><span class="value">${user.coinxId || 'N/A'}</span></div>
+                    <div class="receipt-row"><span class="label">🔗 Smart Contract</span><span class="value" style="font-size:10px;">${user.smartContract || 'N/A'}</span></div>
+                    <div class="receipt-row"><span class="label">📋 प्रकार</span><span class="value highlight">${type || 'अन्य'}</span></div>
+                    <div class="receipt-row"><span class="label">💰 राशि</span><span class="value ${(type==='deposit'||type==='receive')?'green':'red'}">${amt.toFixed(2)} CX (${formatINR(coinsToINR(amt))})</span></div>
+                    ${to ? `<div class="receipt-row"><span class="label">➡️ भेजा</span><span class="value">${to}</span></div>` : ''}
+                    ${from ? `<div class="receipt-row"><span class="label">⬅️ प्राप्त</span><span class="value">${from}</span></div>` : ''}
+                    ${fee && parseFloat(fee) > 0 ? `<div class="receipt-row"><span class="label">💸 शुल्क</span><span class="value red">${fee} CX</span></div>` : ''}
+                    <div class="receipt-row"><span class="label">📅 तारीख</span><span class="value">${dateTime || 'N/A'}</span></div>
+                    <div class="receipt-row"><span class="label">📊 स्थिति</span><span class="value highlight">${status || 'Completed'}</span></div>
+                    <div class="receipt-row"><span class="label">🌐 नेटवर्क</span><span class="value">BEP20 (USDT)</span></div>
+                    <div class="watermark">🔒 सुरक्षित लेनदेन • CoinX Network</div>
+                </div>
+                </body>
+                </html>
+            `;
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `CoinX_Receipt_${Date.now()}.html`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('✅ रसीद डाउनलोड हो गई!', 'success');
+        }
+
+        function printReceipt() {
+            const content = document.getElementById('receiptContent');
+            const win = window.open('', '_blank', 'width=500,height=700');
+            if (!win) { showToast('पॉप-अप ब्लॉक हो गया!', 'error'); return; }
+            win.document.write(`
+                <html><head><title>CoinX Receipt</title>
+                <style>
+                    body { font-family: 'Poppins', sans-serif; background: #0d0a12; padding: 20px; color: #f1e6f5; }
+                    .receipt-card { background: #1a1228; border-radius: 16px; padding: 24px; max-width: 460px; margin: 0 auto; border: 1px solid rgba(212,175,55,0.2); }
+                    .receipt-logo { text-align: center; padding-bottom: 12px; border-bottom: 1px solid rgba(212,175,55,0.1); }
+                    .receipt-logo span { font-size: 22px; font-weight: 800; background: linear-gradient(135deg,#f5d97e,#d4af37,#c9a030); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+                    .receipt-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 12px; }
+                    .receipt-row .label { color: #a78bbf; }
+                    .receipt-row .value { color: #f1e6f5; text-align: right; }
+                    .receipt-row .value.highlight { color: #d4af37; font-weight: 600; }
+                    .receipt-row .value.green { color: #34d399; }
+                    .receipt-row .value.red { color: #f87171; }
+                    .watermark { text-align: center; font-size: 8px; color: #6b4a7a; margin-top: 8px; padding-top: 6px; border-top: 1px solid rgba(212,175,55,0.08); }
+                    @media print { body { background:#fff; } .receipt-card { border-color:#ddd; background:#f9f9f9; } .receipt-row .label { color:#666; } .receipt-row .value { color:#333; } }
+                </style>
+                </head>
+                <body>
+                <div class="receipt-card">
+                    <div class="receipt-logo"><span>CoinX Network</span><small style="display:block;font-size:9px;color:#6b4a7a;">Premium • Gold Edition</small></div>
+                    ${content.innerHTML}
+                    <div class="watermark">🔒 सुरक्षित लेनदेन • CoinX Network</div>
+                </div>
+                </body></html>
+            `);
+            win.document.close();
+            setTimeout(() => { win.print(); }, 500);
         }
 
         // ============================================================
@@ -1186,8 +1333,11 @@
         window.coinsToINR = coinsToINR;
         window.coinsToUSDT = coinsToUSDT;
         window.allUsers = allUsers;
-        window.adminHistory = adminHistory;
-        window.addHistory = addHistory;
+        window.viewReceipt = viewReceipt;
+        window.closeReceipt = closeReceipt;
+        window.downloadReceipt = downloadReceipt;
+        window.printReceipt = printReceipt;
+        window.renderTransactions = renderTransactions;
     </script>
 
 </body>
