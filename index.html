@@ -682,16 +682,15 @@
                 <div class="glass-gold p-8 rounded-3xl border-amber-500/20 space-y-5 shadow-2xl">
                     <div>
                         <label class="block text-xs font-semibold text-amber-300/70 mb-1.5">एडमिन ईमेल</label>
-                        <input type="email" id="adminUsernameInput" placeholder="एडमिन ईमेल दर्ज करें" value="admin2@coinx.com" class="w-full bg-black/40 border border-amber-500/20 rounded-2xl py-3.5 px-4 text-sm focus:outline-none focus:border-amber-500 text-white transition-all font-mono">
+                        <input type="email" id="adminUsernameInput" placeholder="एडमिन ईमेल दर्ज करें" class="w-full bg-black/40 border border-amber-500/20 rounded-2xl py-3.5 px-4 text-sm focus:outline-none focus:border-amber-500 text-white transition-all font-mono">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-amber-300/70 mb-1.5">एडमिन पासवर्ड</label>
-                        <input type="password" id="adminPasswordInput" placeholder="पासवर्ड दर्ज करें" value="Admin@2025" class="w-full bg-black/40 border border-amber-500/20 rounded-2xl py-3.5 px-4 text-sm focus:outline-none focus:border-amber-500 text-white transition-all font-mono">
+                        <input type="password" id="adminPasswordInput" placeholder="पासवर्ड दर्ज करें" class="w-full bg-black/40 border border-amber-500/20 rounded-2xl py-3.5 px-4 text-sm focus:outline-none focus:border-amber-500 text-white transition-all font-mono">
                     </div>
                     <button id="btn-admin-login" onclick="submitAdminLogin(this)" class="w-full btn-gold py-4 rounded-2xl shadow-lg transition-all text-sm mt-2 flex items-center justify-center gap-2 text-base font-bold">
                         <span>एडमिन एक्सेस खोलें</span> <i class="fa-solid fa-unlock-keyhole"></i>
                     </button>
-                    <p class="text-center text-[10px] text-amber-300/30 mt-1">Email: admin2@coinx.com | Password: Admin@2025</p>
                 </div>
             </section>
 
@@ -1103,14 +1102,14 @@
         }
 
         // ============================================================
-        // ADMIN LOGIN - Fixed with correct credentials
+        // ADMIN LOGIN - Fixed with correct credentials (hidden from display)
         // ============================================================
         async function submitAdminLogin(btn) {
             const email = document.getElementById('adminUsernameInput').value.trim();
             const password = document.getElementById('adminPasswordInput').value.trim();
             if (!email || !password) { showToast('एडमिन ईमेल और पासवर्ड दर्ज करें', 'error'); return; }
 
-            // Hardcoded admin credentials (as per screenshot)
+            // Hardcoded admin credentials (NOT displayed anywhere)
             const ADMIN_EMAIL = 'admin2@coinx.com';
             const ADMIN_PASSWORD = 'Admin@2025';
 
@@ -1131,7 +1130,6 @@
                 try {
                     await account.createEmailPasswordSession(email, password);
                 } catch (e) {
-                    // If Appwrite auth fails, still allow admin access with hardcoded credentials
                     console.warn('Appwrite session failed, using local admin mode');
                 }
 
@@ -1143,8 +1141,7 @@
                 try {
                     await loadAllData();
                 } catch (e) {
-                    showToast('⚠️ Appwrite से डेटा लोड नहीं हो पाया, लेकिन आप ऑफलाइन मोड में हैं', 'info');
-                    // Set some dummy data for demo
+                    showToast('⚠️ Appwrite से डेटा लोड नहीं हो पाया, ऑफलाइन मोड', 'info');
                     users = [];
                     updateAdminStats();
                     renderAdminUsers();
@@ -1942,9 +1939,7 @@
             renderSlider();
             document.getElementById('adminLoginPage').classList.remove('hidden');
             document.getElementById('adminDashboardContainer').classList.add('hidden');
-            // Pre-fill credentials
-            document.getElementById('adminUsernameInput').value = 'admin2@coinx.com';
-            document.getElementById('adminPasswordInput').value = 'Admin@2025';
+            // Input fields are empty - user must type credentials
         };
 
         // Register global functions
