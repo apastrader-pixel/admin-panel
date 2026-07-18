@@ -80,6 +80,18 @@
         .btn-gold:active {
             transform: scale(0.97);
         }
+        .btn-gold-outline {
+            background: transparent;
+            color: #d4af37;
+            border: 1.5px solid rgba(212, 175, 55, 0.5);
+            font-weight: 600;
+            transition: all 0.25s ease;
+        }
+        .btn-gold-outline:hover {
+            background: rgba(212, 175, 55, 0.12);
+            border-color: #d4af37;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.15);
+        }
         .btn-animate {
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -671,6 +683,32 @@
             text-align: center;
             padding: 5px;
         }
+        /* Admin Wallet Transfer Section */
+        .wallet-transfer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        @media (max-width: 640px) {
+            .wallet-transfer-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .coinx-wallet-box {
+            background: rgba(18, 12, 28, 0.6);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            border-radius: 14px;
+            padding: 16px;
+        }
+        .coinx-wallet-box .label {
+            color: #a78bbf;
+            font-size: 10px;
+        }
+        .coinx-wallet-box .value {
+            color: #d4af37;
+            font-size: 16px;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
@@ -842,11 +880,11 @@
                     </div>
                 </div>
 
-                <!-- Wallet Tab -->
+                <!-- Wallet Tab - UPDATED with CoinX Wallet Credit/Debit -->
                 <div id="adminSection-wallet" class="admin-sec space-y-4 hidden">
-                    <!-- Send Coins -->
+                    <!-- Send Coins to User's Trade Wallet -->
                     <div class="glass-gold p-5 rounded-2xl border-amber-500/20 space-y-4">
-                        <h4 class="text-sm font-bold text-amber-400"><i class="fa-solid fa-paper-plane mr-2"></i>एडमिन कॉइन ट्रांसफर</h4>
+                        <h4 class="text-sm font-bold text-amber-400"><i class="fa-solid fa-paper-plane mr-2"></i>एडमिन कॉइन ट्रांसफर (Trade Wallet)</h4>
                         <p class="text-[11px] text-amber-300/40">किसी भी यूजर को Smart Contract, CoinX ID या Email के माध्यम से कॉइन भेजें।</p>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                             <input type="text" id="adminSendIdentifier" placeholder="SC / CoinX ID / Email" class="bg-black/40 border border-amber-500/20 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-amber-400 font-mono">
@@ -858,6 +896,24 @@
                         </div>
                     </div>
 
+                    <!-- CoinX Wallet Credit/Debit via Smart Contract - NEW -->
+                    <div class="glass-gold p-5 rounded-2xl border-amber-500/20 space-y-4">
+                        <h4 class="text-sm font-bold text-amber-400"><i class="fa-solid fa-wallet mr-2"></i>CoinX Wallet (Smart Contract) Credit/Debit</h4>
+                        <p class="text-[11px] text-amber-300/40">किसी भी यूजर के CoinX Wallet (Trade Wallet) में Smart Contract के माध्यम से कॉइन Credit या Debit करें।</p>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                            <input type="text" id="adminCoinXWalletIdentifier" placeholder="SC / CoinX ID / Email" class="bg-black/40 border border-amber-500/20 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-amber-400 font-mono">
+                            <input type="number" id="adminCoinXWalletAmount" placeholder="कॉइन संख्या" class="bg-black/40 border border-amber-500/20 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-amber-400 font-mono">
+                            <select id="adminCoinXWalletAction" class="bg-black/40 border border-amber-500/20 rounded-xl p-3 text-xs text-amber-300/60 focus:outline-none focus:border-amber-400">
+                                <option value="credit">✅ क्रेडिट (जोड़ें)</option>
+                                <option value="debit">❌ डेबिट (काटें)</option>
+                            </select>
+                            <button onclick="adminCoinXWalletTransaction()" class="btn-gold py-3 rounded-xl text-xs font-bold shadow-xl flex items-center justify-center gap-2"><i class="fa-solid fa-arrow-right-arrow-left"></i> ट्रांजैक्शन करें</button>
+                        </div>
+                        <div class="bg-blue-500/10 border border-blue-500/25 rounded-xl p-3 text-center">
+                            <span class="text-[10px] text-blue-400/70"><i class="fa-solid fa-info-circle mr-1"></i> यह ट्रांजैक्शन यूजर के <strong>Trade Wallet (CoinX Wallet)</strong> में होगा। Transaction History में रिकॉर्ड सेव होगा।</span>
+                        </div>
+                    </div>
+
                     <!-- Unlock Staking -->
                     <div class="glass-gold p-5 rounded-2xl border-amber-500/20 space-y-4">
                         <h4 class="text-sm font-bold text-amber-400"><i class="fa-solid fa-lock-open mr-2"></i>स्टेकिंग अनलॉक (Admin)</h4>
@@ -865,6 +921,9 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                             <input type="text" id="adminUnlockIdentifier" placeholder="SC / CoinX ID / Email" class="bg-black/40 border border-amber-500/20 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-amber-400 font-mono">
                             <button onclick="adminUnlockStakeByIdentifier()" class="btn-gold py-3 rounded-xl text-xs font-bold shadow-xl flex items-center justify-center gap-2 col-span-2"><i class="fa-solid fa-unlock"></i> स्टेकिंग अनलॉक करें</button>
+                        </div>
+                        <div class="text-[10px] text-amber-300/40 mt-1">
+                            <i class="fa-solid fa-lightbulb mr-1"></i> <strong>Note:</strong> सिर्फ वही स्टेकिंग अनलॉक होगी जिसकी Locking Period समाप्त हो चुकी है।
                         </div>
                     </div>
 
@@ -1028,22 +1087,12 @@
         }
 
         // ============================================================
-        // FIXED: CORRECT APPWRITE IMAGE URL RESOLVER
+        // APPWRITE IMAGE URL RESOLVER
         // ============================================================
         function resolveImageUrl(fileId) {
             if (!fileId) return '';
             if (fileId.startsWith('http://') || fileId.startsWith('https://')) return fileId;
-            // Direct Appwrite Storage URL - using the correct bucket ID
             return `${APPWRITE_ENDPOINT}/storage/buckets/${SCREENSHOT_BUCKET_ID}/files/${fileId}/view?project=${APPWRITE_PROJECT_ID}&mode=admin`;
-        }
-
-        // ============================================================
-        // TEST: Check if image is accessible
-        // ============================================================
-        function testImageUrl(fileId) {
-            const url = resolveImageUrl(fileId);
-            console.log('Image URL:', url);
-            return url;
         }
 
         function mapUserDoc(doc) {
@@ -1330,7 +1379,7 @@
             const targetId = document.getElementById('adminCoinUserId').value.trim();
             const coinAmount = parseFloat(document.getElementById('adminCoinAmount').value);
             const action = document.getElementById('adminCoinAction').value;
-            if (!targetId || !coinAmount || coinAmount <= 0) { showToast('सही आईडी/ईमेल और मान्य कॉइन संख्या भरें。',
+            if (!targetId || !coinAmount || coinAmount <= 0) { showToast('सही आईडी/ईमेल और मान्य कॉइन संख्या भरें।',
                 'error'); return; }
             setButtonLoading(btn, true);
             const idx = users.findIndex(u => u.$id === targetId || u.email === targetId);
@@ -1351,7 +1400,7 @@
         }
 
         // ============================================================
-        // ADMIN DEPOSITS - FIXED with screenshot display
+        // ADMIN DEPOSITS
         // ============================================================
         function renderAdminDeposits() {
             if (!adminSession) return;
@@ -1365,8 +1414,6 @@
                 const inrAmount = (parseFloat(d.amountUSD || 0) * 100).toFixed(2);
                 const fileId = d.receiptFileId || '';
                 const imgUrl = fileId ? resolveImageUrl(fileId) : '';
-                console.log('Deposit Image URL:', imgUrl); // Debug log
-
                 const card = document.createElement('div');
                 card.className = 'bg-black/40 p-4 rounded-xl border border-amber-500/15 space-y-2';
                 card.innerHTML = `
@@ -1429,7 +1476,7 @@
         }
 
         // ============================================================
-        // ADMIN WITHDRAWALS - FIXED with screenshot display
+        // ADMIN WITHDRAWALS
         // ============================================================
         function renderAdminWithdrawals() {
             if (!adminSession) return;
@@ -1444,8 +1491,6 @@
                 const inrAmount = (parseFloat(w.coinsAmount || 0) * 0.90).toFixed(2);
                 const fileId = u.withdrawal_screenshot || '';
                 const imgUrl = fileId ? resolveImageUrl(fileId) : '';
-                console.log('Withdrawal Image URL:', imgUrl); // Debug log
-
                 const card = document.createElement('div');
                 card.className = 'bg-black/40 p-4 rounded-xl border border-amber-500/15 space-y-2';
                 card.innerHTML = `
@@ -1594,51 +1639,181 @@
             } catch (e) { showToast('त्रुटि', 'error'); }
         }
 
+        // ============================================================
+        // FIXED: ADMIN UNLOCK STAKE BY IDENTIFIER
+        // ============================================================
         async function adminUnlockStakeByIdentifier() {
             if (!adminSession) return;
             const identifier = document.getElementById('adminUnlockIdentifier').value.trim();
             if (!identifier) { showToast('SC / CoinX ID / Email दर्ज करें', 'error'); return; }
+            
+            setButtonLoading(document.querySelector('#adminSection-wallet .btn-gold'), true);
+            
             try {
+                // Find user by identifier
                 const res = await databases.listDocuments(DATABASE_ID, USERS_COLLECTION_ID, [
-                    Query.or([Query.equal('email', identifier), Query.equal('coinxId', identifier), Query.equal(
-                        'smartContract', identifier)])
+                    Query.or([
+                        Query.equal('email', identifier),
+                        Query.equal('coinxId', identifier),
+                        Query.equal('smartContract', identifier)
+                    ])
                 ]);
-                if (res.documents.length === 0) { showToast('❌ यूजर नहीं मिला!', 'error'); return; }
+                
+                if (res.documents.length === 0) { 
+                    showToast('❌ यूजर नहीं मिला!', 'error');
+                    setButtonLoading(document.querySelector('#adminSection-wallet .btn-gold'), false);
+                    return; 
+                }
+                
                 const target = res.documents[0];
-                const idx = users.findIndex(u => u.$id === target.$id);
-                if (idx === -1) { showToast('❌ यूजर नहीं मिला!', 'error'); return; }
-                if (!users[idx].staking || users[idx].staking.length === 0) { showToast('❌ इस यूजर की कोई स्टेकिंग नहीं!',
-                        'error'); return; }
+                const user = mapUserDoc(target);
+                
+                if (!user.staking || user.staking.length === 0) { 
+                    showToast('❌ इस यूजर की कोई स्टेकिंग नहीं!', 'error');
+                    setButtonLoading(document.querySelector('#adminSection-wallet .btn-gold'), false);
+                    return; 
+                }
+                
                 let unlocked = 0;
                 const remaining = [];
-                const history = users[idx].stakingHistory || [];
-                users[idx].staking.forEach(s => {
-                    if (s.lockUntil <= Date.now()) {
+                const history = user.stakingHistory || [];
+                const now = Date.now();
+                
+                user.staking.forEach(s => {
+                    if (s.lockUntil <= now) {
                         unlocked += s.amount;
                         history.push({ ...s, unlockedAt: new Date().toISOString(), unlockedBy: 'admin' });
                     } else {
                         remaining.push(s);
                     }
                 });
-                if (unlocked === 0) { showToast('❌ कोई भी अनलॉक योग्य स्टेकिंग नहीं!', 'error'); return; }
-                const newCoins = parseFloat(users[idx].coins || 0) + unlocked;
-                const newStaked = Math.max(0, parseFloat(users[idx].staked || 0) - unlocked);
+                
+                if (unlocked === 0) { 
+                    showToast('❌ कोई भी अनलॉक योग्य स्टेकिंग नहीं! (Locking Period समाप्त नहीं हुआ)', 'error');
+                    setButtonLoading(document.querySelector('#adminSection-wallet .btn-gold'), false);
+                    return; 
+                }
+                
+                const newCoins = parseFloat(user.coins || 0) + unlocked;
+                const newStaked = Math.max(0, parseFloat(user.staked || 0) - unlocked);
+                
                 await databases.updateDocument(DATABASE_ID, USERS_COLLECTION_ID, target.$id, {
                     coins: newCoins,
                     staked: newStaked,
                     staking: JSON.stringify(remaining),
                     stakingHistory: JSON.stringify(history)
                 });
-                users[idx].coins = newCoins;
-                users[idx].staked = newStaked;
-                users[idx].staking = remaining;
-                users[idx].stakingHistory = history;
-                showToast(`✅ ${unlocked} CX अनलॉक कर दिया गया`, 'success');
+                
+                // Update local users array
+                const idx = users.findIndex(u => u.$id === target.$id);
+                if (idx !== -1) {
+                    users[idx].coins = newCoins;
+                    users[idx].staked = newStaked;
+                    users[idx].staking = remaining;
+                    users[idx].stakingHistory = history;
+                }
+                
+                showToast(`✅ ${unlocked} CX अनलॉक कर दिया गया (${user.name})`, 'success');
+                document.getElementById('adminUnlockIdentifier').value = '';
                 renderAdminStaking();
                 updateAdminStats();
                 renderAdminUsers();
-                document.getElementById('adminUnlockIdentifier').value = '';
-            } catch (e) { showToast('त्रुटि: ' + e.message, 'error'); }
+                
+            } catch (e) { 
+                showToast('त्रुटि: ' + e.message, 'error'); 
+            } finally { 
+                setButtonLoading(document.querySelector('#adminSection-wallet .btn-gold'), false);
+            }
+        }
+
+        // ============================================================
+        // NEW: ADMIN COINX WALLET TRANSACTION (Credit/Debit via Smart Contract)
+        // ============================================================
+        async function adminCoinXWalletTransaction() {
+            if (!adminSession) { showToast('एडमिन मोड में नहीं', 'error'); return; }
+            
+            const identifier = document.getElementById('adminCoinXWalletIdentifier').value.trim();
+            const amount = parseFloat(document.getElementById('adminCoinXWalletAmount').value);
+            const action = document.getElementById('adminCoinXWalletAction').value;
+            
+            if (!identifier) { showToast('SC / CoinX ID / Email दर्ज करें', 'error'); return; }
+            if (!amount || amount <= 0) { showToast('सही कॉइन संख्या दर्ज करें', 'error'); return; }
+            
+            setButtonLoading(document.querySelector('#adminSection-wallet .btn-gold:not(:first-child)'), true);
+            
+            try {
+                // Find user by identifier
+                const res = await databases.listDocuments(DATABASE_ID, USERS_COLLECTION_ID, [
+                    Query.or([
+                        Query.equal('email', identifier),
+                        Query.equal('coinxId', identifier),
+                        Query.equal('smartContract', identifier)
+                    ])
+                ]);
+                
+                if (res.documents.length === 0) { 
+                    showToast('❌ यूजर नहीं मिला!', 'error');
+                    setButtonLoading(document.querySelector('#adminSection-wallet .btn-gold:not(:first-child)'), false);
+                    return; 
+                }
+                
+                const target = res.documents[0];
+                const user = mapUserDoc(target);
+                
+                let newTradeWallet = parseFloat(user.tradeWallet || 0);
+                let actionText = '';
+                
+                if (action === 'credit') {
+                    newTradeWallet += amount;
+                    actionText = 'क्रेडिट';
+                } else {
+                    if (newTradeWallet < amount) {
+                        showToast(`❌ यूजर के Trade Wallet में केवल ${newTradeWallet.toFixed(2)} CX है!`, 'error');
+                        setButtonLoading(document.querySelector('#adminSection-wallet .btn-gold:not(:first-child)'), false);
+                        return;
+                    }
+                    newTradeWallet -= amount;
+                    actionText = 'डेबिट';
+                }
+                
+                // Create transaction record
+                const tx = {
+                    type: 'admin_coinx_wallet',
+                    action: action,
+                    amount: amount,
+                    dateTime: new Date().toLocaleString('hi-IN'),
+                    status: 'completed',
+                    fromAdmin: true,
+                    note: `Admin द्वारा ${actionText} किया गया`
+                };
+                
+                const txs = parseJsonSafe(target.transactions, []);
+                txs.push(tx);
+                
+                await databases.updateDocument(DATABASE_ID, USERS_COLLECTION_ID, target.$id, {
+                    tradeWallet: newTradeWallet,
+                    transactions: JSON.stringify(txs)
+                });
+                
+                // Update local users array
+                const idx = users.findIndex(u => u.$id === target.$id);
+                if (idx !== -1) {
+                    users[idx].tradeWallet = newTradeWallet;
+                    users[idx].transactions = txs;
+                }
+                
+                showToast(`✅ ${amount} CX ${actionText} कर दिया गया (${user.name})`, 'success');
+                document.getElementById('adminCoinXWalletIdentifier').value = '';
+                document.getElementById('adminCoinXWalletAmount').value = '';
+                updateAdminStats();
+                renderAdminUsers();
+                renderAdminAllTransactions();
+                
+            } catch (e) { 
+                showToast('त्रुटि: ' + e.message, 'error'); 
+            } finally { 
+                setButtonLoading(document.querySelector('#adminSection-wallet .btn-gold:not(:first-child)'), false);
+            }
         }
 
         async function toggleGlobalStakingState(enabled) {
@@ -1695,7 +1870,7 @@
         }
 
         // ============================================================
-        // ADMIN WALLET
+        // ADMIN WALLET - Send Coins & All Transactions
         // ============================================================
         async function adminSendCoins() {
             if (!adminSession) { showToast('एडमिन मोड में नहीं', 'error'); return; }
@@ -1703,6 +1878,9 @@
             const amount = parseFloat(document.getElementById('adminSendAmount').value);
             if (!identifier) { showToast('SC / CoinX ID / Email दर्ज करें', 'error'); return; }
             if (!amount || amount <= 0) { showToast('सही कॉइन संख्या दर्ज करें', 'error'); return; }
+            
+            setButtonLoading(document.querySelector('#adminSection-wallet .btn-gold'), true);
+            
             try {
                 const res = await databases.listDocuments(DATABASE_ID, USERS_COLLECTION_ID, [
                     Query.or([Query.equal('email', identifier), Query.equal('coinxId', identifier), Query.equal(
@@ -1734,7 +1912,9 @@
                 updateAdminStats();
                 renderAdminAllTransactions();
                 renderAdminUsers();
-            } catch (e) { showToast('त्रुटि: ' + e.message, 'error'); }
+            } catch (e) { showToast('त्रुटि: ' + e.message, 'error'); } finally { 
+                setButtonLoading(document.querySelector('#adminSection-wallet .btn-gold'), false);
+            }
         }
 
         function renderAdminAllTransactions() {
@@ -1759,6 +1939,7 @@
                 const div = document.createElement('div');
                 div.className = 'bg-black/40 p-3 rounded-xl border border-amber-500/15 space-y-1';
                 const typeLabel = t.type === 'admin_transfer' ? '🔹 एडमिन ट्रांसफर' :
+                    t.type === 'admin_coinx_wallet' ? '🔹 CoinX Wallet ' + (t.action === 'credit' ? 'क्रेडिट' : 'डेबिट') :
                     t.type === 'transfer' ? '🔸 ट्रांसफर' :
                     t.type === 'receive' ? '🔹 प्राप्त' :
                     t.type === 'internal' ? '🔸 इंटरनल' :
@@ -1776,6 +1957,7 @@
                         ${toLabel ? `<span>${toLabel}</span>` : ''}
                         <span>📅 ${t.dateTime || 'N/A'}</span>
                         ${t.fee ? `<span>शुल्क: ${t.fee} CX</span>` : ''}
+                        ${t.note ? `<span>📝 ${t.note}</span>` : ''}
                     </div>
                     <div class="flex justify-end mt-1">
                         <button onclick="viewTransactionReceipt('${t.userId}','${t.dateTime}','${amountLabel}','${typeLabel}','${t.status||'Completed'}')" class="text-[9px] px-3 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 hover:bg-amber-500/30 transition-all">🧾 रसीद देखें</button>
@@ -2002,6 +2184,7 @@
         window.rejectWithdrawal = rejectWithdrawal;
         window.adminUnlockStake = adminUnlockStake;
         window.adminUnlockStakeByIdentifier = adminUnlockStakeByIdentifier;
+        window.adminCoinXWalletTransaction = adminCoinXWalletTransaction;
         window.toggleGlobalStakingState = toggleGlobalStakingState;
         window.togglePlanState = togglePlanState;
         window.adminSendCoins = adminSendCoins;
@@ -2020,7 +2203,6 @@
         window.slidePrev = slidePrev;
         window.goToSlide = goToSlide;
         window.resolveImageUrl = resolveImageUrl;
-        window.testImageUrl = testImageUrl;
     </script>
 
 </body>
