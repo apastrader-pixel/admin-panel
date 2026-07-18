@@ -998,10 +998,18 @@
             try { return JSON.parse(value); } catch (e) { return fallback; }
         }
 
-        function resolveImageUrl(value) {
-            if (!value) return '';
-            if (value.startsWith('http://') || value.startsWith('https://')) return value;
-            try { return storage.getFileView(SCREENSHOT_BUCKET_ID, value).href; } catch (e) { return ''; }
+        // FIXED: Correct Appwrite image URL resolver
+        function resolveImageUrl(fileId) {
+            if (!fileId) return '';
+            // If it's already a full URL, return as is
+            if (fileId.startsWith('http://') || fileId.startsWith('https://')) return fileId;
+            // Build the correct Appwrite storage view URL
+            try {
+                return storage.getFileView(SCREENSHOT_BUCKET_ID, fileId).href;
+            } catch (e) {
+                // Fallback: construct URL manually
+                return `${APPWRITE_ENDPOINT}/storage/buckets/${SCREENSHOT_BUCKET_ID}/files/${fileId}/view?project=${APPWRITE_PROJECT_ID}`;
+            }
         }
 
         function mapUserDoc(doc) {
@@ -1102,14 +1110,13 @@
         }
 
         // ============================================================
-        // ADMIN LOGIN - Fixed with correct credentials (hidden from display)
+        // ADMIN LOGIN
         // ============================================================
         async function submitAdminLogin(btn) {
             const email = document.getElementById('adminUsernameInput').value.trim();
             const password = document.getElementById('adminPasswordInput').value.trim();
             if (!email || !password) { showToast('एडमिन ईमेल और पासवर्ड दर्ज करें', 'error'); return; }
 
-            // Hardcoded admin credentials (NOT displayed anywhere)
             const ADMIN_EMAIL = 'admin2@coinx.com';
             const ADMIN_PASSWORD = 'Admin@2025';
 
@@ -1120,24 +1127,14 @@
 
             setButtonLoading(btn, true);
             try {
-                // Try to authenticate with Appwrite
-                try {
-                    await account.get();
-                    await account.deleteSession('current');
-                } catch (e) {}
-
-                // Create session with Appwrite
-                try {
-                    await account.createEmailPasswordSession(email, password);
-                } catch (e) {
-                    console.warn('Appwrite session failed, using local admin mode');
-                }
+                try { await account.get();
+                    await account.deleteSession('current'); } catch (e) {}
+                try { await account.createEmailPasswordSession(email, password); } catch (e) {}
 
                 adminSession = true;
                 document.getElementById('adminLoginPage').classList.add('hidden');
                 document.getElementById('adminDashboardContainer').classList.remove('hidden');
 
-                // Load data from Appwrite if available
                 try {
                     await loadAllData();
                 } catch (e) {
@@ -1320,7 +1317,7 @@
         }
 
         // ============================================================
-        // ADMIN DEPOSITS
+        // ADMIN DEPOSITS - FIXED with screenshot display
         // ============================================================
         function renderAdminDeposits() {
             if (!adminSession) return;
@@ -1332,6 +1329,7 @@
             pending.forEach(u => {
                 const d = u.pendingDeposit;
                 const inrAmount = (parseFloat(d.amountUSD || 0) * 100).toFixed(2);
+                const imgUrl = d.receiptFileId ? resolveImageUrl(d.receiptFileId) : '';
                 const card = document.createElement('div');
                 card.className = 'bg-black/40 p-4 rounded-xl border border-amber-500/15 space-y-2';
                 card.innerHTML = `
@@ -1340,7 +1338,7 @@
                         <span class="text-green-400 font-bold">$${d.amountUSD} | ₹${inrAmount}</span>
                     </div>
                     <div class="text-[10px] text-amber-300/30">🪙 कॉइन: ${d.coinsAmount} CX | 📅 ${d.dateTime}</div>
-                    ${d.receiptFileId?`<div class="mt-1"><img src="${resolveImageUrl(d.receiptFileId)}" class="w-16 h-16 object-contain cursor-pointer rounded-lg border border-amber-500/20" onclick="openFullscreenImage('${resolveImageUrl(d.receiptFileId)}')"></div>`:''}
+                    ${imgUrl ? `<div class="mt-2"><img src="${imgUrl}" class="w-20 h-20 object-contain cursor-pointer rounded-lg border border-amber-500/20 hover:border-amber-400 transition-all" onclick="openFullscreenImage('${imgUrl}')" onerror="this.style.display='none'"></div>` : '<div class="text-[10px] text-red-400/50">⚠️ स्क्रीनशॉट उपलब्ध नहीं</div>'}
                     <div class="flex flex-wrap gap-2 justify-end">
                         <button onclick="approveDeposit('${u.$id}')" class="bg-green-500 hover:bg-green-600 text-[#0a0712] px-4 py-1.5 rounded-lg text-[10px] font-bold transition-all">✅ Approve</button>
                         <button onclick="rejectDeposit('${u.$id}')" class="bg-red-500 hover:bg-red-600 text-white px-4 py-1.5 rounded-lg text-[10px] font-bold transition-all">❌ Reject</button>
@@ -1389,7 +1387,7 @@
         }
 
         // ============================================================
-        // ADMIN WITHDRAWALS
+        // ADMIN WITHDRAWALS - FIXED with screenshot display
         // ============================================================
         function renderAdminWithdrawals() {
             if (!adminSession) return;
@@ -1402,6 +1400,7 @@
                 const w = u.pendingWithdrawal;
                 const usdtAmount = (parseFloat(w.coinsAmount || 0) * 0.90 / 100).toFixed(2);
                 const inrAmount = (parseFloat(w.coinsAmount || 0) * 0.90).toFixed(2);
+                const imgUrl = u.withdrawal_screenshot ? resolveImageUrl(u.withdrawal_screenshot) : '';
                 const card = document.createElement('div');
                 card.className = 'bg-black/40 p-4 rounded-xl border border-amber-500/15 space-y-2';
                 card.innerHTML = `
@@ -1412,7 +1411,7 @@
                     <div class="text-[10px] text-amber-300/30">🏦 Address: ${u.withdrawal_address||'N/A'} | 📅 ${w.dateTime}</div>
                     <div class="text-[10px] text-green-400">💰 INR: ₹${inrAmount} (10% चार्ज कट)</div>
                     <div class="text-[10px] text-blue-400">💵 USDT BEP20: $${usdtAmount}</div>
-                    ${u.withdrawal_screenshot?`<div class="mt-1"><img src="${resolveImageUrl(u.withdrawal_screenshot)}" class="w-16 h-16 object-contain cursor-pointer rounded-lg border border-amber-500/20" onclick="openFullscreenImage('${resolveImageUrl(u.withdrawal_screenshot)}')"></div>`:''}
+                    ${imgUrl ? `<div class="mt-2"><img src="${imgUrl}" class="w-20 h-20 object-contain cursor-pointer rounded-lg border border-amber-500/20 hover:border-amber-400 transition-all" onclick="openFullscreenImage('${imgUrl}')" onerror="this.style.display='none'"></div>` : '<div class="text-[10px] text-red-400/50">⚠️ स्क्रीनशॉट उपलब्ध नहीं</div>'}
                     <div class="flex flex-wrap gap-2 justify-end">
                         <button onclick="approveWithdrawal('${u.$id}')" class="bg-green-500 hover:bg-green-600 text-[#0a0712] px-4 py-1.5 rounded-lg text-[10px] font-bold transition-all">✅ Complete</button>
                         <button onclick="rejectWithdrawal('${u.$id}')" class="bg-red-500 hover:bg-red-600 text-white px-4 py-1.5 rounded-lg text-[10px] font-bold transition-all">❌ Reject</button>
@@ -1646,7 +1645,7 @@
         }
 
         // ============================================================
-        // ADMIN WALLET - Send Coins & All Transactions
+        // ADMIN WALLET
         // ============================================================
         async function adminSendCoins() {
             if (!adminSession) { showToast('एडमिन मोड में नहीं', 'error'); return; }
@@ -1939,7 +1938,6 @@
             renderSlider();
             document.getElementById('adminLoginPage').classList.remove('hidden');
             document.getElementById('adminDashboardContainer').classList.add('hidden');
-            // Input fields are empty - user must type credentials
         };
 
         // Register global functions
