@@ -642,6 +642,35 @@
         .slider-nav.next {
             right: 10px;
         }
+        /* Image preview thumbnail style */
+        .screenshot-thumb {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 2px solid rgba(212, 175, 55, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .screenshot-thumb:hover {
+            border-color: #d4af37;
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
+        }
+        .screenshot-placeholder {
+            width: 80px;
+            height: 80px;
+            background: rgba(30, 20, 40, 0.6);
+            border-radius: 10px;
+            border: 1px dashed rgba(212, 175, 55, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b4a7a;
+            font-size: 10px;
+            text-align: center;
+            padding: 5px;
+        }
     </style>
 </head>
 <body>
@@ -998,18 +1027,23 @@
             try { return JSON.parse(value); } catch (e) { return fallback; }
         }
 
-        // FIXED: Correct Appwrite image URL resolver
+        // ============================================================
+        // FIXED: CORRECT APPWRITE IMAGE URL RESOLVER
+        // ============================================================
         function resolveImageUrl(fileId) {
             if (!fileId) return '';
-            // If it's already a full URL, return as is
             if (fileId.startsWith('http://') || fileId.startsWith('https://')) return fileId;
-            // Build the correct Appwrite storage view URL
-            try {
-                return storage.getFileView(SCREENSHOT_BUCKET_ID, fileId).href;
-            } catch (e) {
-                // Fallback: construct URL manually
-                return `${APPWRITE_ENDPOINT}/storage/buckets/${SCREENSHOT_BUCKET_ID}/files/${fileId}/view?project=${APPWRITE_PROJECT_ID}`;
-            }
+            // Direct Appwrite Storage URL - using the correct bucket ID
+            return `${APPWRITE_ENDPOINT}/storage/buckets/${SCREENSHOT_BUCKET_ID}/files/${fileId}/view?project=${APPWRITE_PROJECT_ID}&mode=admin`;
+        }
+
+        // ============================================================
+        // TEST: Check if image is accessible
+        // ============================================================
+        function testImageUrl(fileId) {
+            const url = resolveImageUrl(fileId);
+            console.log('Image URL:', url);
+            return url;
         }
 
         function mapUserDoc(doc) {
@@ -1296,7 +1330,7 @@
             const targetId = document.getElementById('adminCoinUserId').value.trim();
             const coinAmount = parseFloat(document.getElementById('adminCoinAmount').value);
             const action = document.getElementById('adminCoinAction').value;
-            if (!targetId || !coinAmount || coinAmount <= 0) { showToast('सही आईडी/ईमेल और मान्य कॉइन संख्या भरें।',
+            if (!targetId || !coinAmount || coinAmount <= 0) { showToast('सही आईडी/ईमेल और मान्य कॉइन संख्या भरें。',
                 'error'); return; }
             setButtonLoading(btn, true);
             const idx = users.findIndex(u => u.$id === targetId || u.email === targetId);
@@ -1329,7 +1363,10 @@
             pending.forEach(u => {
                 const d = u.pendingDeposit;
                 const inrAmount = (parseFloat(d.amountUSD || 0) * 100).toFixed(2);
-                const imgUrl = d.receiptFileId ? resolveImageUrl(d.receiptFileId) : '';
+                const fileId = d.receiptFileId || '';
+                const imgUrl = fileId ? resolveImageUrl(fileId) : '';
+                console.log('Deposit Image URL:', imgUrl); // Debug log
+
                 const card = document.createElement('div');
                 card.className = 'bg-black/40 p-4 rounded-xl border border-amber-500/15 space-y-2';
                 card.innerHTML = `
@@ -1338,7 +1375,12 @@
                         <span class="text-green-400 font-bold">$${d.amountUSD} | ₹${inrAmount}</span>
                     </div>
                     <div class="text-[10px] text-amber-300/30">🪙 कॉइन: ${d.coinsAmount} CX | 📅 ${d.dateTime}</div>
-                    ${imgUrl ? `<div class="mt-2"><img src="${imgUrl}" class="w-20 h-20 object-contain cursor-pointer rounded-lg border border-amber-500/20 hover:border-amber-400 transition-all" onclick="openFullscreenImage('${imgUrl}')" onerror="this.style.display='none'"></div>` : '<div class="text-[10px] text-red-400/50">⚠️ स्क्रीनशॉट उपलब्ध नहीं</div>'}
+                    <div class="mt-2">
+                        ${imgUrl ? 
+                            `<img src="${imgUrl}" class="screenshot-thumb" onclick="openFullscreenImage('${imgUrl}')" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=\\'screenshot-placeholder\\'><i class=\\'fa-solid fa-image\\'></i><br>Image not found</div>'">` :
+                            `<div class="screenshot-placeholder"><i class="fa-solid fa-image"></i><br>No Screenshot</div>`
+                        }
+                    </div>
                     <div class="flex flex-wrap gap-2 justify-end">
                         <button onclick="approveDeposit('${u.$id}')" class="bg-green-500 hover:bg-green-600 text-[#0a0712] px-4 py-1.5 rounded-lg text-[10px] font-bold transition-all">✅ Approve</button>
                         <button onclick="rejectDeposit('${u.$id}')" class="bg-red-500 hover:bg-red-600 text-white px-4 py-1.5 rounded-lg text-[10px] font-bold transition-all">❌ Reject</button>
@@ -1400,7 +1442,10 @@
                 const w = u.pendingWithdrawal;
                 const usdtAmount = (parseFloat(w.coinsAmount || 0) * 0.90 / 100).toFixed(2);
                 const inrAmount = (parseFloat(w.coinsAmount || 0) * 0.90).toFixed(2);
-                const imgUrl = u.withdrawal_screenshot ? resolveImageUrl(u.withdrawal_screenshot) : '';
+                const fileId = u.withdrawal_screenshot || '';
+                const imgUrl = fileId ? resolveImageUrl(fileId) : '';
+                console.log('Withdrawal Image URL:', imgUrl); // Debug log
+
                 const card = document.createElement('div');
                 card.className = 'bg-black/40 p-4 rounded-xl border border-amber-500/15 space-y-2';
                 card.innerHTML = `
@@ -1411,7 +1456,12 @@
                     <div class="text-[10px] text-amber-300/30">🏦 Address: ${u.withdrawal_address||'N/A'} | 📅 ${w.dateTime}</div>
                     <div class="text-[10px] text-green-400">💰 INR: ₹${inrAmount} (10% चार्ज कट)</div>
                     <div class="text-[10px] text-blue-400">💵 USDT BEP20: $${usdtAmount}</div>
-                    ${imgUrl ? `<div class="mt-2"><img src="${imgUrl}" class="w-20 h-20 object-contain cursor-pointer rounded-lg border border-amber-500/20 hover:border-amber-400 transition-all" onclick="openFullscreenImage('${imgUrl}')" onerror="this.style.display='none'"></div>` : '<div class="text-[10px] text-red-400/50">⚠️ स्क्रीनशॉट उपलब्ध नहीं</div>'}
+                    <div class="mt-2">
+                        ${imgUrl ? 
+                            `<img src="${imgUrl}" class="screenshot-thumb" onclick="openFullscreenImage('${imgUrl}')" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=\\'screenshot-placeholder\\'><i class=\\'fa-solid fa-image\\'></i><br>Image not found</div>'">` :
+                            `<div class="screenshot-placeholder"><i class="fa-solid fa-image"></i><br>No Screenshot</div>`
+                        }
+                    </div>
                     <div class="flex flex-wrap gap-2 justify-end">
                         <button onclick="approveWithdrawal('${u.$id}')" class="bg-green-500 hover:bg-green-600 text-[#0a0712] px-4 py-1.5 rounded-lg text-[10px] font-bold transition-all">✅ Complete</button>
                         <button onclick="rejectWithdrawal('${u.$id}')" class="bg-red-500 hover:bg-red-600 text-white px-4 py-1.5 rounded-lg text-[10px] font-bold transition-all">❌ Reject</button>
@@ -1969,6 +2019,8 @@
         window.slideNext = slideNext;
         window.slidePrev = slidePrev;
         window.goToSlide = goToSlide;
+        window.resolveImageUrl = resolveImageUrl;
+        window.testImageUrl = testImageUrl;
     </script>
 
 </body>
