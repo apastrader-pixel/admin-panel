@@ -37,10 +37,6 @@
         .user-row { background: rgba(18,12,28,0.5); border: 1px solid rgba(212,175,55,0.08); border-radius: 10px; padding: 10px 14px; transition: all 0.3s; }
         .user-row:hover { border-color: rgba(212,175,55,0.25); background: rgba(18,12,28,0.7); }
         
-        .badge-pending { background: rgba(251,191,36,0.2); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
-        .badge-approved { background: rgba(52,211,153,0.2); color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
-        .badge-rejected { background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
-        
         #toastNotification {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px);
             max-width: 400px; width: 92%; background: rgba(18,12,28,0.92); backdrop-filter: blur(20px);
@@ -58,6 +54,11 @@
         .copy-btn-all:hover { background: rgba(212,175,55,0.3); }
         
         .inr-text { color: #34d399; font-weight: 600; font-size: 10px; }
+        
+        /* Login Error Box */
+        .login-error { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); border-radius: 12px; padding: 10px 14px; color: #f87171; font-size: 12px; display: none; }
+        .login-error.show { display: block; }
+        .login-error .error-detail { color: #fca5a5; font-size: 10px; margin-top: 4px; display: block; }
     </style>
 </head>
 <body>
@@ -76,11 +77,23 @@
                     <h1 class="text-3xl font-extrabold gold-text-gradient mt-4">एडमिन पैनल</h1>
                     <p class="text-xs text-amber-300/50">CoinX Network + Wallet</p>
                 </div>
+                
+                <!-- ===== ERROR DISPLAY ===== -->
+                <div id="loginError" class="login-error">
+                    <i class="fa-solid fa-circle-exclamation mr-2"></i>
+                    <span id="loginErrorMsg">लॉगिन विफल! कृपया सही क्रेडेंशियल दर्ज करें।</span>
+                    <span class="error-detail" id="loginErrorDetail"></span>
+                </div>
+                
                 <div class="space-y-4">
                     <div><label class="block text-xs font-semibold text-amber-300/70 mb-1.5">एडमिन ईमेल</label><input type="email" id="adminEmail" placeholder="admin@coinx.com" class="w-full bg-black/40 border border-amber-500/20 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-amber-400 text-white"></div>
-                    <div><label class="block text-xs font-semibold text-amber-300/70 mb-1.5">पासवर्ड</label><input type="password" id="adminPassword" placeholder="पासवर्ड दर्ज करें" class="w-full bg-black/40 border border-amber-500/20 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-amber-400 text-white"></div>
-                    <button onclick="adminLogin()" class="w-full btn-gold py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2"><span>लॉगिन करें</span> <i class="fa-solid fa-right-to-bracket"></i></button>
+                    <div><label class="block text-xs font-semibold text-amber-300/70 mb-1.5">पासवर्ड</label><input type="password" id="adminPassword" placeholder="पासवर्ड दर्ज करें" class="w-full bg-black/40 border border-amber-500/20 rounded-xl py-3 px-4 text-sm focus:outline-none focus:border-amber-400 text-white" onkeydown="if(event.key==='Enter') adminLogin()"></div>
+                    <button id="loginBtn" onclick="adminLogin()" class="w-full btn-gold py-3.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2">
+                        <span id="loginBtnText">लॉगिन करें</span> 
+                        <i id="loginBtnIcon" class="fa-solid fa-right-to-bracket"></i>
+                    </button>
                     <p class="text-center text-[10px] text-amber-300/30 mt-2">डिफ़ॉल्ट: admin@coinx.com / Admin@2025</p>
+                    <p class="text-center text-[9px] text-amber-300/20 mt-1">⚠️ Appwrite Console में Admin User बनाएं और Team में Add करें</p>
                 </div>
             </div>
         </div>
@@ -264,12 +277,11 @@
         const ADMIN_TEAM_ID = "6a4a84580012aed57e61";
 
         // ============================================================
-        // INR CONVERSION - 1 USDT = ₹85
+        // INR CONVERSION
         // ============================================================
         const USDT_TO_INR = 85;
         
         function coinsToINR(cxCoins) {
-            // 100 CX = $0.90 USDT
             const usdt = (cxCoins * 0.90) / 100;
             return usdt * USDT_TO_INR;
         }
@@ -345,7 +357,22 @@
         function hideToast() { document.getElementById('toastNotification').classList.remove('show'); }
 
         // ============================================================
-        // COPY ALL USER DETAILS - NEW FUNCTION
+        // SHOW LOGIN ERROR
+        // ============================================================
+        function showLoginError(message, detail = '') {
+            const errorBox = document.getElementById('loginError');
+            document.getElementById('loginErrorMsg').innerText = message;
+            document.getElementById('loginErrorDetail').innerText = detail;
+            errorBox.classList.add('show');
+            setTimeout(() => errorBox.classList.remove('show'), 8000);
+        }
+
+        function hideLoginError() {
+            document.getElementById('loginError').classList.remove('show');
+        }
+
+        // ============================================================
+        // COPY FUNCTIONS
         // ============================================================
         function copyAllUserDetails(user) {
             const details = `
@@ -355,8 +382,8 @@
         मोबाइल: ${user.phone || 'N/A'}
         CoinX ID: ${user.coinxId || 'N/A'}
         स्मार्ट कॉन्ट्रैक्ट: ${user.smartContract || 'N/A'}
-        मुख्य वॉलेट: ${parseFloat(user.coins || 0).toFixed(2)} CX (₹${coinsToINR(user.coins || 0).toFixed(2)})
-        Trade Wallet: ${parseFloat(user.tradeWallet || 0).toFixed(2)} CX (₹${coinsToINR(user.tradeWallet || 0).toFixed(2)})
+        मुख्य वॉलेट: ${parseFloat(user.coins || 0).toFixed(2)} CX (${formatINR(coinsToINR(user.coins || 0))})
+        Trade Wallet: ${parseFloat(user.tradeWallet || 0).toFixed(2)} CX (${formatINR(coinsToINR(user.tradeWallet || 0))})
         स्टेकिंग: ${parseFloat(user.staked || 0).toFixed(2)} CX
         विथड्रॉवल: ${parseFloat(user.withdrawal || 0).toFixed(2)} CX
         विथड्रॉवल एड्रेस: ${user.withdrawal_address || 'N/A'}
@@ -364,16 +391,10 @@
         रेफरल्स: ${(user.referrals || []).length}
         रजिस्ट्रेशन: ${user.$createdAt ? new Date(user.$createdAt).toLocaleString('hi-IN') : 'N/A'}
         ================================`;
-
             if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(details).then(() => {
-                    showToast('✅ सभी यूजर डिटेल्स कॉपी हो गईं!', 'success');
-                }).catch(() => {
-                    legacyCopyAll(details);
-                });
-            } else {
-                legacyCopyAll(details);
-            }
+                navigator.clipboard.writeText(details).then(() => showToast('✅ सभी यूजर डिटेल्स कॉपी हो गईं!', 'success'))
+                    .catch(() => legacyCopyAll(details));
+            } else { legacyCopyAll(details); }
         }
 
         function legacyCopyAll(text) {
@@ -388,19 +409,11 @@
             showToast('✅ सभी यूजर डिटेल्स कॉपी हो गईं!', 'success');
         }
 
-        // ============================================================
-        // COPY SINGLE FIELD
-        // ============================================================
         function copyField(text, msg) {
             if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(() => {
-                    showToast(msg || '✅ कॉपी हो गया!', 'success');
-                }).catch(() => {
-                    legacyCopySingle(text, msg);
-                });
-            } else {
-                legacyCopySingle(text, msg);
-            }
+                navigator.clipboard.writeText(text).then(() => showToast(msg || '✅ कॉपी हो गया!', 'success')).catch(() =>
+                    legacyCopySingle(text, msg));
+            } else { legacyCopySingle(text, msg); }
         }
 
         function legacyCopySingle(text, msg) {
@@ -414,35 +427,93 @@
         }
 
         // ============================================================
-        // ADMIN LOGIN
+        // ✅ ADMIN LOGIN - FIXED WITH ERROR HANDLING
         // ============================================================
         async function adminLogin() {
             const email = document.getElementById('adminEmail').value.trim();
             const password = document.getElementById('adminPassword').value.trim();
-            if (!email || !password) { showToast('ईमेल और पासवर्ड दर्ज करें', 'error'); return; }
+            
+            hideLoginError();
+            
+            if (!email || !password) {
+                showLoginError('❌ कृपया ईमेल और पासवर्ड दोनों दर्ज करें।', 'दोनों फील्ड्स भरना अनिवार्य है।');
+                return;
+            }
+
+            const btn = document.getElementById('loginBtn');
+            const btnText = document.getElementById('loginBtnText');
+            const btnIcon = document.getElementById('loginBtnIcon');
+            
+            // Loading state
+            btn.disabled = true;
+            btnText.innerText = 'Processing...';
+            btnIcon.className = 'fa-solid fa-spinner fa-spin';
+            btn.classList.add('opacity-70');
 
             try {
-                try { await account.get(); } catch (e) {}
-                try { await account.deleteSession('current'); } catch (e) {}
-
+                // Clean up old sessions
+                try { await account.get(); await account.deleteSession('current'); } catch (e) {}
+                
+                // Try to login
                 await account.createEmailPasswordSession(email, password);
-
-                const memberships = await teams.listMemberships(ADMIN_TEAM_ID);
-                const isAdminUser = memberships.memberships.some(m => m.userId === (await account.get()).$id);
-
-                if (!isAdminUser) {
-                    showToast('❌ आप एडमिन नहीं हैं!', 'error');
-                    await account.deleteSession('current');
+                
+                // Get current user
+                const currentUser = await account.get();
+                
+                // Check if user is in admin team
+                let isAdminUser = false;
+                try {
+                    const memberships = await teams.listMemberships(ADMIN_TEAM_ID);
+                    isAdminUser = memberships.memberships.some(m => m.userId === currentUser.$id);
+                } catch (teamError) {
+                    console.warn('Team check failed:', teamError);
+                    showLoginError('⚠️ Admin Team मौजूद नहीं है!', 'Appwrite Console में Team बनाएं या Code से Team Check हटाएं।');
+                    btn.disabled = false;
+                    btnText.innerText = 'लॉगिन करें';
+                    btnIcon.className = 'fa-solid fa-right-to-bracket';
+                    btn.classList.remove('opacity-70');
                     return;
                 }
 
+                if (!isAdminUser) {
+                    showLoginError('❌ आप एडमिन नहीं हैं!', 'Appwrite Console में इस User को Admin Team में Add करें।');
+                    try { await account.deleteSession('current'); } catch (e) {}
+                    btn.disabled = false;
+                    btnText.innerText = 'लॉगिन करें';
+                    btnIcon.className = 'fa-solid fa-right-to-bracket';
+                    btn.classList.remove('opacity-70');
+                    return;
+                }
+
+                // ✅ Login Successful
                 isAdmin = true;
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('adminDashboard').classList.remove('hidden');
                 showToast('✅ एडमिन लॉगिन सफल!', 'success');
                 await loadAllData();
+
             } catch (error) {
-                showToast('❌ गलत ईमेल या पासवर्ड!', 'error');
+                console.error('Login error:', error);
+                let errorMsg = '❌ लॉगिन विफल!';
+                let errorDetail = error.message || 'गलत ईमेल या पासवर्ड।';
+                
+                if (error.message && error.message.includes('user not found')) {
+                    errorMsg = '❌ यूजर नहीं मिला!';
+                    errorDetail = 'Appwrite Console में admin@coinx.com User बनाएं।';
+                } else if (error.message && error.message.includes('invalid password')) {
+                    errorMsg = '❌ गलत पासवर्ड!';
+                    errorDetail = 'पासवर्ड: Admin@2025 (Case Sensitive)';
+                } else if (error.message && error.message.includes('rate limit')) {
+                    errorMsg = '⏳ बहुत ज्यादा कोशिशें!';
+                    errorDetail = 'कुछ देर बाद दोबारा Try करें।';
+                }
+                
+                showLoginError(errorMsg, errorDetail);
+            } finally {
+                btn.disabled = false;
+                btnText.innerText = 'लॉगिन करें';
+                btnIcon.className = 'fa-solid fa-right-to-bracket';
+                btn.classList.remove('opacity-70');
             }
         }
 
@@ -548,7 +619,7 @@
         }
 
         // ============================================================
-        // USERS - WITH COPY ALL DETAILS BUTTON
+        // USERS
         // ============================================================
         function filterUsers() {
             const query = document.getElementById('userSearchInput').value.toLowerCase();
@@ -707,7 +778,7 @@
         }
 
         // ============================================================
-        // WITHDRAWALS - WITH INR DISPLAY
+        // WITHDRAWALS
         // ============================================================
         function renderWithdrawals() {
             const list = document.getElementById('withdrawalsList');
@@ -1035,7 +1106,7 @@
         }
 
         // ============================================================
-        // INIT
+        // INIT - Auto Login Check
         // ============================================================
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && document.getElementById('loginScreen').classList.contains('hidden') === false) {
@@ -1054,7 +1125,10 @@
                     document.getElementById('adminDashboard').classList.remove('hidden');
                     await loadAllData();
                 }
-            } catch (e) { /* not logged in */ }
+            } catch (e) {
+                // Not logged in - show login screen
+                document.getElementById('loginScreen').classList.remove('hidden');
+            }
         };
 
         // Global functions
